@@ -25,6 +25,8 @@ apps/figo2unity/    canvas.json → Unity UGUI prefabs (.prefab YAML + textures 
 apps/exporter_png.h shared sprite-baking / PNG export helpers
 apps/anim_tracks.h  shared animation-track extraction
 tools/web2canvas/   React/HTML → canvas.json (Node, Playwright driving Edge/Chrome)
+unity-plugin/       Figo Prefab Importer — Unity editor package wrapping figo2unity
+                    (stage with tools/pack_unity_plugin.ps1 → build_unityplugin/)
 examples/html/      starfall_menu.html sample (menu + settings, 1280×720) + cached canvas.json
 skills/             Claude Code skills: figo2cocos / figo2unity / web-to-godot
 docs/agent-memory/  pipeline build notes & gotchas

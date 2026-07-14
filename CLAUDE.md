@@ -37,6 +37,17 @@ build\figo2godot.exe examples\html\starfall_menu.canvas.json out_godot
 产出目录里应有 .prefab/.tscn + textures/（PNG 去重 + .meta），转换器 stdout 会
 打印帧数与贴图数。输出目录用完即删（.gitignore 已兜底 `*_out/`）。
 
+## Unity 插件（Asset Store 包）
+
+`unity-plugin/FigoPrefabImporter/` 是 Unity 编辑器包源码（薄 C# 胶水：
+Tools → Figo Prefab Importer 窗口 + 右键菜单，调包内 `Editor/Bin/figo2unity.exe`，
+Gamma/Linear 按 PlayerSettings 自动选 `--linear`）。
+`powershell -File tools/pack_unity_plugin.ps1` 把源码 + exe + starfall 样例
+staged 到 `build_unityplugin/`，拷进任意 Unity 工程 Assets/ 即可用/导出。
+**注意 exe 必须是带 fig2json 静态库的自包含构建**（同级 `../fig2json` 先
+`cargo build --release` 再 configure，否则 .fig 输入不可用）。
+已在 Unity 2022.3 batchmode 端到端验证（编译 + 转换 starfall + prefab 断言）。
+
 ## 工作流技能
 
 - 导 Cocos → `.claude/skills/figo2cocos/SKILL.md`

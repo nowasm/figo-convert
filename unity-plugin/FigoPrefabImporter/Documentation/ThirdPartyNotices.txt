@@ -1,0 +1,19 @@
+Third-Party Notices — Figo Prefab Importer
+
+The bundled converter executable (Editor/Bin/figo2unity.exe) statically links
+the following open-source components:
+
+1. ThorVG — vector rasterization engine
+   https://github.com/thorvg/thorvg
+   License: MIT
+
+2. fig2json — .fig file unpacking
+   https://github.com/nowasm/fig2json (based on work by kreako)
+   License: MIT
+
+3. nlohmann/json — JSON parsing
+   https://github.com/nlohmann/json
+   License: MIT
+
+The full MIT license texts are available at the linked repositories.
+No component in this package collects data or accesses the network.
