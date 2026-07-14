@@ -25,6 +25,9 @@ function findBin(name) {
     process.resourcesPath && path.join(process.resourcesPath, 'bin', name),
     path.join(REPO, 'build', name),
     path.join(REPO, 'build', name + '.exe'),
+    // runtime tools (figoplay/figoedit) build in the sibling figo repo
+    path.join(REPO, '..', 'figo', 'build', name),
+    path.join(REPO, '..', 'figo', 'build', name + '.exe'),
   ].filter(Boolean);
   for (const c of cands) if (fs.existsSync(c)) return c;
   return null;

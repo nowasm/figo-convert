@@ -1333,9 +1333,17 @@ async function aiNamePass(page, records, dir) {
 // exits cleanly while the editor stays open. Returns false (with a hint) when
 // the binary isn't built yet — never fatal.
 function openInFigoedit(file) {
-  const exe = path.join(__dirname, '..', '..', 'build', process.platform === 'win32' ? 'figoedit.exe' : 'figoedit');
-  if (!fs.existsSync(exe)) {
-    console.error(`figoedit not found at ${exe} (build it, then: figoedit ${path.basename(file)})`);
+  // figoedit builds in the sibling figo repo (the runtime); also honor a local
+  // copy in this repo's build/ and the FIGOEDIT env var.
+  const bin = process.platform === 'win32' ? 'figoedit.exe' : 'figoedit';
+  const cands = [
+    process.env.FIGOEDIT,
+    path.join(__dirname, '..', '..', 'build', bin),
+    path.join(__dirname, '..', '..', '..', 'figo', 'build', bin),
+  ].filter(Boolean);
+  const exe = cands.find(c => fs.existsSync(c));
+  if (!exe) {
+    console.error(`figoedit not found (tried ${cands.join(', ')}) — build it in the sibling figo repo or set FIGOEDIT=<path>`);
     return false;
   }
   try {

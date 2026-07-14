@@ -119,8 +119,9 @@ node tools/web2canvas/html2godot.js "<...>/html_ui_export/app/HUD C.html" --out 
   打开某个 `.tscn`）截图，Read 出来对着原页面看：布局/字体/颜色/发光/切角对不对。
   弹窗工程逐 `.tscn` 截（`set_main_scene` + `run_project <scene>`）。
 - **像素级地真值**：要分辨"解析 bug vs Godot 专有 bug（z 序/裁剪/文本）"，拿
-  figo 自己的渲染器当 oracle——`render_test`（`-DFIGO_BUILD_EXAMPLES=ON`
-  编出）出 BMP，转 PNG 对比。和 Godot 一致 = 链路对；不一致 = Godot 侧问题。
+  figo 自己的渲染器当 oracle——`render_test`（在同级 `../figo` 仓库里编出，
+  本仓库的 CMake 强制关掉了 examples）出 BMP，转 PNG 对比。和 Godot 一致 =
+  链路对；不一致 = Godot 侧问题。
 
 发现不对 → 多半落在下面的"已知 limits"或保真长尾，回到第 2 步调参或记问题。
 
