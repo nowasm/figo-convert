@@ -1,0 +1,20 @@
+# build dirs (any local CMake configure: build/, build_msvc/, ...)
+build*/
+
+# web2canvas (node tool)
+node_modules/
+tools/web2canvas/test/*.canvas.json
+
+# converter outputs (scenes, prefabs, sprites, manifests)
+godot_out/
+wallet_out/
+hud_out/
+search_out/
+hud_app/
+hud_popups/
+hud_full/
+wallet_pf/
+*_out/
+
+# stray screenshots / render checks (sample assets under examples/ are tracked)
+*.bmp

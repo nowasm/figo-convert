@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>STARFALL ARENA — UI 设计稿（web2canvas 转换样例）</title>
+<style>
+  :root {
+    --bg-deep:   #070b16;
+    --bg-panel:  #0e1526;
+    --line:      #1d2a45;
+    --cyan:      #00e5ff;
+    --cyan-dim:  #0e7f9e;
+    --magenta:   #ff2d78;
+    --amber:     #ffb63d;
+    --text:      #e8f1ff;
+    --text-dim:  #7d8cab;
+    --font-disp: "Bahnschrift", "Arial Narrow", sans-serif;
+    --font-mono: "Consolas", monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #000; display: flex; justify-content: center; }
+  #stage {
+    position: relative; width: 1280px; height: 720px; overflow: hidden;
+    background: var(--bg-deep); font-family: var(--font-disp); color: var(--text);
+  }
+  .screen { position: absolute; inset: 0; }
+
+  /* == 共用背景：深空 + 星野 + 斜切光带 ============================= */
+  .space-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(1000px 520px at 78% -10%, rgba(0,229,255,.14), transparent 60%),
+      radial-gradient(800px 480px at -8% 108%, rgba(255,45,120,.12), transparent 55%),
+      radial-gradient(2px 2px at 12% 22%, #cfe9ff 50%, transparent 51%),
+      radial-gradient(2px 2px at 31% 64%, #9fd8ff 50%, transparent 51%),
+      radial-gradient(1px 1px at 47% 15%, #ffffff 50%, transparent 51%),
+      radial-gradient(2px 2px at 58% 41%, #cfe9ff 50%, transparent 51%),
+      radial-gradient(1px 1px at 66% 78%, #9fd8ff 50%, transparent 51%),
+      radial-gradient(2px 2px at 83% 57%, #ffffff 50%, transparent 51%),
+      radial-gradient(1px 1px at 91% 24%, #cfe9ff 50%, transparent 51%),
+      linear-gradient(160deg, #0a1122 0%, #070b16 55%, #0b0916 100%);
+  }
+  .slash {
+    position: absolute; width: 900px; height: 130px; transform: rotate(-18deg);
+    background: linear-gradient(90deg, transparent, rgba(0,229,255,.10), transparent);
+  }
+  .slash.s1 { top: 120px; left: 380px; }
+  .slash.s2 { top: 430px; left: 520px; height: 90px; opacity: .7; }
+
+  /* == 屏 1：主菜单 ================================================ */
+  .logo-block { position: absolute; top: 92px; left: 96px; }
+  .logo-kicker {
+    font-family: var(--font-mono); font-size: 15px; letter-spacing: 6px;
+    color: var(--cyan); margin-bottom: 10px;
+  }
+  .logo-title {
+    font-size: 88px; font-weight: 800; line-height: .92; letter-spacing: 2px;
+    text-transform: uppercase;
+    background: linear-gradient(180deg, #ffffff 20%, #9adcff 60%, #2aa5c9 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    text-shadow: 0 0 42px rgba(0,229,255,.35);
+  }
+  .logo-title .accent { color: var(--magenta); -webkit-text-fill-color: var(--magenta); }
+  .logo-tag { margin-top: 14px; font-size: 17px; color: var(--text-dim); letter-spacing: 3px; }
+
+  .menu-col { position: absolute; top: 296px; left: 96px; width: 420px; }
+  .menu-btn {
+    position: relative; display: flex; align-items: center; justify-content: space-between;
+    height: 60px; margin-bottom: 12px; padding: 0 26px; cursor: pointer;
+    background: linear-gradient(90deg, rgba(14,21,38,.92), rgba(14,21,38,.55));
+    border: 1px solid var(--line); border-left: 4px solid var(--cyan-dim);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%);
+    font-size: 21px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase;
+  }
+  .menu-btn .idx { font-family: var(--font-mono); font-size: 13px; color: var(--text-dim); }
+  .menu-btn.primary {
+    height: 76px; border-left-color: var(--magenta);
+    background: linear-gradient(90deg, rgba(255,45,120,.24), rgba(255,45,120,.06) 70%, transparent);
+    box-shadow: 0 0 30px rgba(255,45,120,.22);
+    font-size: 26px;
+  }
+  .menu-btn.primary .idx { color: var(--magenta); }
+
+  .season-card {
+    position: absolute; top: 108px; right: 96px; width: 330px; padding: 22px 24px 24px;
+    background: rgba(14,21,38,.85); border: 1px solid var(--line); border-top: 3px solid var(--amber);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+  }
+  .season-kicker { font-family: var(--font-mono); font-size: 12px; letter-spacing: 3px; color: var(--amber); }
+  .season-name { margin-top: 8px; font-size: 26px; font-weight: 800; letter-spacing: 1px; }
+  .season-timer { margin-top: 10px; font-family: var(--font-mono); font-size: 14px; color: var(--text-dim); }
+  .season-bar { margin-top: 14px; height: 8px; background: #1a2440; border-radius: 4px; }
+  .season-fill { width: 62%; height: 100%; border-radius: 4px;
+    background: linear-gradient(90deg, var(--amber), #ff7a3d); }
+  .season-pct { margin-top: 8px; font-family: var(--font-mono); font-size: 13px; color: var(--amber); text-align: right; }
+
+  .bottom-bar {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 96px;
+    display: flex; align-items: center; padding: 0 96px;
+    background: linear-gradient(180deg, transparent, rgba(5,8,16,.92) 40%);
+    border-top: 1px solid var(--line);
+  }
+  .player-chip { display: flex; align-items: center; gap: 16px; }
+  .avatar {
+    width: 58px; height: 58px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #38f0ff, #0b5e7d 70%);
+    border: 2px solid var(--cyan); box-shadow: 0 0 18px rgba(0,229,255,.45);
+  }
+  .player-name { font-size: 19px; font-weight: 700; letter-spacing: 1px; }
+  .player-rank { margin-top: 3px; font-family: var(--font-mono); font-size: 13px; color: var(--cyan); }
+  .level-badge {
+    margin-left: 18px; padding: 6px 14px; font-family: var(--font-mono); font-size: 14px;
+    color: #06121c; background: var(--cyan); clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+    font-weight: 700;
+  }
+  .currency-group { margin-left: auto; display: flex; gap: 18px; }
+  .currency {
+    display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+    background: rgba(14,21,38,.9); border: 1px solid var(--line); border-radius: 20px;
+    font-family: var(--font-mono); font-size: 16px;
+  }
+  .coin { width: 18px; height: 18px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #ffe29a, var(--amber) 70%); }
+  .gem  { width: 16px; height: 16px; transform: rotate(45deg); border-radius: 3px;
+    background: linear-gradient(135deg, #ff7ab0, var(--magenta)); }
+  .ver-tag { position: absolute; right: 96px; top: -26px; font-family: var(--font-mono);
+    font-size: 12px; color: var(--text-dim); }
+
+  /* == 屏 2:设置面板 =============================================== */
+  .dim { position: absolute; inset: 0; background: rgba(3,5,10,.72); }
+  .settings-panel {
+    position: absolute; top: 70px; left: 320px; width: 640px; height: 580px;
+    background: var(--bg-panel); border: 1px solid var(--line); border-top: 3px solid var(--cyan);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 26px), calc(100% - 26px) 100%, 0 100%);
+    padding: 30px 40px;
+  }
+  .settings-title { font-size: 34px; font-weight: 800; letter-spacing: 6px; text-transform: uppercase; }
+  .settings-sub { margin-top: 6px; font-family: var(--font-mono); font-size: 13px; color: var(--text-dim); }
+  .tab-row { display: flex; gap: 10px; margin-top: 24px; border-bottom: 1px solid var(--line); padding-bottom: 0; }
+  .tab {
+    padding: 10px 22px 12px; font-size: 16px; font-weight: 700; letter-spacing: 3px;
+    color: var(--text-dim); border-bottom: 3px solid transparent;
+  }
+  .tab.active { color: var(--cyan); border-bottom-color: var(--cyan); }
+
+  .setting-row {
+    display: flex; align-items: center; margin-top: 26px; gap: 20px;
+  }
+  .setting-label { width: 170px; font-size: 17px; letter-spacing: 1px; }
+  .slider-track { flex: 1; height: 8px; background: #1a2440; border-radius: 4px; position: relative; }
+  .slider-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--cyan-dim), var(--cyan)); }
+  .slider-fill.v80 { width: 80%; } .slider-fill.v55 { width: 55%; }
+  .slider-knob {
+    position: absolute; top: -6px; width: 20px; height: 20px; border-radius: 50%;
+    background: #eafbff; border: 3px solid var(--cyan); box-shadow: 0 0 12px rgba(0,229,255,.6);
+  }
+  .slider-knob.v80 { left: calc(80% - 10px); } .slider-knob.v55 { left: calc(55% - 10px); }
+  .slider-val { width: 56px; text-align: right; font-family: var(--font-mono); font-size: 15px; color: var(--cyan); }
+
+  .toggle { width: 64px; height: 30px; border-radius: 15px; position: relative; }
+  .toggle.on  { background: rgba(0,229,255,.25); border: 1px solid var(--cyan); }
+  .toggle.off { background: #131c33; border: 1px solid var(--line); }
+  .toggle-dot { position: absolute; top: 3px; width: 22px; height: 22px; border-radius: 50%; }
+  .toggle.on  .toggle-dot { right: 4px; background: var(--cyan); box-shadow: 0 0 10px rgba(0,229,255,.7); }
+  .toggle.off .toggle-dot { left: 4px; background: #3a4a70; }
+  .toggle-state { width: 56px; font-family: var(--font-mono); font-size: 14px; }
+  .toggle-state.on { color: var(--cyan); } .toggle-state.off { color: var(--text-dim); }
+
+  .seg-group { flex: 1; display: flex; gap: 8px; }
+  .seg {
+    flex: 1; text-align: center; padding: 10px 0; font-size: 15px; font-weight: 700; letter-spacing: 2px;
+    background: #131c33; border: 1px solid var(--line); color: var(--text-dim);
+    clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+  }
+  .seg.active { background: rgba(255,45,120,.22); border-color: var(--magenta); color: #ffd7e6; }
+
+  .panel-footer { position: absolute; bottom: 30px; left: 40px; right: 40px; display: flex; justify-content: space-between; }
+  .ghost-btn {
+    padding: 14px 34px; font-size: 16px; font-weight: 700; letter-spacing: 3px;
+    border: 1px solid var(--line); color: var(--text-dim); cursor: pointer;
+    clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+  }
+  .apply-btn {
+    padding: 14px 48px; font-size: 16px; font-weight: 800; letter-spacing: 3px; color: #071018;
+    background: linear-gradient(90deg, var(--cyan), #6ef4ff);
+    box-shadow: 0 0 26px rgba(0,229,255,.4); cursor: pointer;
+    clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- ========== 屏 1:主菜单 ========== -->
+  <div class="screen" id="screen-menu">
+    <div class="space-bg"></div>
+    <div class="slash s1"></div>
+    <div class="slash s2"></div>
+
+    <div class="logo-block">
+      <div class="logo-kicker">// ORBITAL COMBAT LEAGUE</div>
+      <div class="logo-title">STAR<span class="accent">FALL</span><br>ARENA</div>
+      <div class="logo-tag">星陨竞技场 · 赛季 7</div>
+    </div>
+
+    <div class="menu-col">
+      <div class="menu-btn primary"><span>开始匹配</span><span class="idx">[01]</span></div>
+      <div class="menu-btn"><span>武器库</span><span class="idx">[02]</span></div>
+      <div class="menu-btn"><span>排位赛</span><span class="idx">[03]</span></div>
+      <div class="menu-btn" id="btn-settings" title="设置"><span>设置</span><span class="idx">[04]</span></div>
+    </div>
+
+    <div class="season-card">
+      <div class="season-kicker">SEASON 7 // 限时</div>
+      <div class="season-name">霓虹坠落</div>
+      <div class="season-timer">剩余 12 天 08:42:17</div>
+      <div class="season-bar"><div class="season-fill"></div></div>
+      <div class="season-pct">62 / 100 级</div>
+    </div>
+
+    <div class="bottom-bar">
+      <div class="ver-tag">BUILD 7.2.1-beta // figo 转换样例</div>
+      <div class="player-chip">
+        <div class="avatar"></div>
+        <div>
+          <div class="player-name">NOVA_Striker</div>
+          <div class="player-rank">钻石 II · 2417 pts</div>
+        </div>
+        <div class="level-badge">LV 62</div>
+      </div>
+      <div class="currency-group">
+        <div class="currency"><div class="coin"></div><span>128,450</span></div>
+        <div class="currency"><div class="gem"></div><span>3,205</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 屏 2:设置面板 ========== -->
+  <div class="screen" id="screen-settings" style="display:none">
+    <div class="space-bg"></div>
+    <div class="dim"></div>
+
+    <div class="settings-panel">
+      <div class="settings-title">设置</div>
+      <div class="settings-sub">SETTINGS // AUDIO &amp; VIDEO</div>
+
+      <div class="tab-row">
+        <div class="tab active">音频</div>
+        <div class="tab">画面</div>
+        <div class="tab">操作</div>
+        <div class="tab">网络</div>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-label">主音量</div>
+        <div class="slider-track"><div class="slider-fill v80"></div><div class="slider-knob v80"></div></div>
+        <div class="slider-val">80%</div>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-label">音乐音量</div>
+        <div class="slider-track"><div class="slider-fill v55"></div><div class="slider-knob v55"></div></div>
+        <div class="slider-val">55%</div>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-label">全屏模式</div>
+        <div class="toggle on"><div class="toggle-dot"></div></div>
+        <div class="toggle-state on">开启</div>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-label">垂直同步</div>
+        <div class="toggle off"><div class="toggle-dot"></div></div>
+        <div class="toggle-state off">关闭</div>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-label">画质等级</div>
+        <div class="seg-group">
+          <div class="seg">流畅</div>
+          <div class="seg">均衡</div>
+          <div class="seg active">高清</div>
+          <div class="seg">极致</div>
+        </div>
+      </div>
+
+      <div class="panel-footer">
+        <div class="ghost-btn" id="btn-back" title="返回主菜单">返回</div>
+        <div class="apply-btn" id="btn-apply" title="应用设置">应用设置</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // web2canvas 多屏钩子:--states "menu,settings" 时逐屏调用 window.__nav(state)
+    window.__nav = function (state) {
+      var screens = { menu: 'screen-menu', settings: 'screen-settings' };
+      document.getElementById('screen-menu').style.display = 'none';
+      document.getElementById('screen-settings').style.display = 'none';
+      var id = screens[state];
+      if (id) document.getElementById(id).style.display = 'block';
+    };
+    window.__nav('menu');
+
+    // 交互:主菜单「设置」→ 设置面板;面板「返回」/「应用设置」→ 主菜单
+    document.getElementById('btn-settings').addEventListener('click', function () { window.__nav('settings'); });
+    document.getElementById('btn-back').addEventListener('click', function () { window.__nav('menu'); });
+    document.getElementById('btn-apply').addEventListener('click', function () { window.__nav('menu'); });
+  </script>
+</div>
+</body>
+</html>

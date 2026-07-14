@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>web2canvas — 导出向导</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: -apple-system, 'Segoe UI', 'PingFang SC', sans-serif;
+         background: #0d1017; color: #e8ebf0; min-height: 100vh; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 32px 24px 60px; }
+  h1 { font-size: 20px; font-weight: 700; letter-spacing: .3px; }
+  h1 .accent { color: #3a7bff; }
+  .steps { display: flex; gap: 8px; margin: 18px 0 28px; font-size: 12px; color: #7d8694; }
+  .steps span { padding: 5px 12px; border-radius: 20px; background: #151a24; }
+  .steps span.on { background: #1d3a75; color: #cfe0ff; }
+  .panel { background: #12161f; border: 1px solid #1f2530; border-radius: 14px; padding: 24px; }
+
+  /* step 1 */
+  .drop { border: 2px dashed #2a3242; border-radius: 12px; padding: 42px 20px; text-align: center;
+          color: #8b93a1; font-size: 14px; cursor: pointer; transition: border-color .15s; }
+  .drop:hover { border-color: #3a7bff; color: #c9d2de; }
+  .row { display: flex; gap: 10px; margin-top: 14px; }
+  input[type=text] { flex: 1; background: #0d1119; border: 1px solid #262d3b; color: #e8ebf0;
+                     border-radius: 9px; padding: 10px 12px; font-size: 13px; }
+  input[type=text]:focus { outline: none; border-color: #3a7bff; }
+  select { background: #0d1119; border: 1px solid #262d3b; color: #e8ebf0; border-radius: 9px;
+           padding: 10px 12px; font-size: 13px; }
+  .btn { background: #1b2230; color: #c9d2de; border: none; border-radius: 9px; padding: 10px 18px;
+         font-size: 13px; font-weight: 600; cursor: pointer; }
+  .btn:hover { background: #232c3e; }
+  .btn.primary { background: #3a7bff; color: #fff; }
+  .btn.primary:hover { background: #4c88ff; }
+  .btn:disabled { opacity: .45; cursor: default; }
+  .adv { margin-top: 16px; font-size: 12px; color: #7d8694; }
+  .adv .row { margin-top: 8px; }
+  .adv label { display: flex; align-items: center; gap: 8px; flex: 1; }
+  .adv input { flex: 1; }
+  .hint { margin-top: 14px; font-size: 12px; color: #5d6674; line-height: 1.6; }
+
+  /* step 2 log */
+  .log { background: #0a0d13; border-radius: 10px; padding: 14px; font: 11px/1.7 ui-monospace, monospace;
+         color: #8b93a1; max-height: 380px; overflow-y: auto; white-space: pre-wrap; }
+  .spin { display: inline-block; width: 14px; height: 14px; border: 2px solid #3a7bff;
+          border-top-color: transparent; border-radius: 50%; animation: r 1s linear infinite;
+          vertical-align: -2px; margin-right: 8px; }
+  @keyframes r { to { transform: rotate(360deg); } }
+
+  /* step 3 report */
+  .stats { display: flex; gap: 12px; margin-bottom: 20px; }
+  .stat { flex: 1; background: #151a24; border-radius: 12px; padding: 14px 16px; }
+  .stat b { display: block; font-size: 24px; font-weight: 700; }
+  .stat i { font-style: normal; font-size: 12px; color: #7d8694; }
+  .stat.warn b { color: #e2a13a; }
+  .cols { display: flex; gap: 20px; align-items: flex-start; }
+  .shotbox { flex: none; width: 300px; background: #0a0d13; border-radius: 12px; padding: 10px; }
+  .shotbox img { width: 100%; border-radius: 8px; display: block; }
+  .shotbox .cap { font-size: 11px; color: #5d6674; text-align: center; padding-top: 8px; }
+  .right { flex: 1; min-width: 0; }
+  .sec { font-size: 12px; font-weight: 700; color: #aeb6c2; letter-spacing: 1px; margin: 18px 0 10px; }
+  .sec:first-child { margin-top: 0; }
+  .pcard { display: flex; align-items: center; gap: 12px; background: #151a24; border: 1px solid #1f2530;
+           border-radius: 12px; padding: 10px 14px; margin-bottom: 8px; }
+  .pcard canvas { width: 84px; height: 48px; object-fit: contain; background: #0a0d13; border-radius: 8px; flex: none; }
+  .pcard .nm { font-size: 14px; font-weight: 600; }
+  .pcard .ct { font-size: 12px; color: #7d8694; margin-top: 2px; }
+  .pcard .grow { flex: 1; min-width: 0; }
+  .tag { font-size: 11px; padding: 3px 9px; border-radius: 8px; background: #143526; color: #4fd58f; }
+  .tag.off { background: #2a2f3a; color: #8b93a1; }
+  .switch { position: relative; width: 38px; height: 22px; flex: none; }
+  .switch input { opacity: 0; width: 100%; height: 100%; position: absolute; cursor: pointer; z-index: 1; }
+  .switch .tr { position: absolute; inset: 0; background: #2a2f3a; border-radius: 12px; transition: background .15s; }
+  .switch .tr::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px;
+                       background: #8b93a1; border-radius: 50%; transition: all .15s; }
+  .switch input:checked + .tr { background: #1d3a75; }
+  .switch input:checked + .tr::after { left: 19px; background: #3a7bff; }
+  .sprites { display: flex; flex-wrap: wrap; gap: 8px; }
+  .sprites img { height: 44px; border-radius: 6px; background: #0a0d13; padding: 4px; }
+  .warnbox { background: #241d10; border: 1px solid #4a3a18; color: #e2c98a; border-radius: 10px;
+             padding: 12px 14px; font-size: 12px; line-height: 1.7; max-height: 180px; overflow-y: auto; }
+  .okbox { color: #4fd58f; font-size: 12px; }
+  .exportbar { margin-top: 24px; padding-top: 20px; border-top: 1px solid #1f2530; }
+
+  /* step 4 done */
+  .done { text-align: center; padding: 30px 0; }
+  .done .big { font-size: 40px; }
+  .done h2 { font-size: 17px; margin: 12px 0 6px; }
+  .done .path { font: 12px ui-monospace, monospace; color: #7d8694; }
+  .hide { display: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>web2canvas <span class="accent">导出向导</span> <span style="font-size:12px;color:#5d6674;font-weight:400">HTML → 游戏引擎预制体</span></h1>
+  <div class="steps">
+    <span id="st1" class="on">1 选择文件夹</span><span id="st2">2 分析</span><span id="st3">3 报告与导出</span><span id="st4">4 完成</span>
+  </div>
+
+  <!-- step 1 -->
+  <div class="panel" id="p1">
+    <div class="drop" id="drop">点击选择网页文件夹<br><span style="font-size:12px">（需包含 index.html 的静态构建产物）</span></div>
+    <div class="row">
+      <input type="text" id="dir" placeholder="或直接粘贴文件夹路径…">
+      <button class="btn primary" id="go">分析</button>
+    </div>
+    <div class="row hide" id="flowsrow">
+      <label style="display:flex;align-items:center;gap:8px;flex:1;font-size:12px;color:#4fd58f;cursor:pointer">
+        <input type="checkbox" id="useflows" checked style="flex:none;width:auto">
+        <span id="flowsinfo"></span>
+      </label>
+    </div>
+    <div class="row hide" id="entryrow">
+      <label style="display:flex;align-items:center;gap:8px;flex:1;font-size:12px;color:#7d8694">
+        入口页面 <select id="entry" style="flex:1"></select>
+      </label>
+    </div>
+    <div class="adv">
+      高级选项
+      <div class="row">
+        <label>采集根 <input type="text" id="root" placeholder="body"></label>
+        <label>视口 <input type="text" id="viewport" placeholder="420x900"></label>
+        <label>等待 ms <input type="text" id="wait" placeholder="2500"></label>
+      </div>
+      <div class="row">
+        <label>多屏 states <input type="text" id="states" placeholder="逗号分隔，页面需有 window.__nav 钩子（可留空）"></label>
+      </div>
+      <div class="row">
+        <label style="cursor:pointer"><input type="checkbox" id="anon" style="flex:none;width:auto">
+          按结构重复识别预制体（页面不是 React 时勾选）</label>
+      </div>
+    </div>
+    <div class="hint">分析会在真实浏览器里渲染页面并做一次完整转换（不落盘到你的目录），
+      React 组件自动识别为预制体候选；多屏/弹窗采集请用 CLI 的 --states / --flows。</div>
+  </div>
+
+  <!-- step 2 -->
+  <div class="panel hide" id="p2">
+    <div style="margin-bottom:12px;font-size:14px"><span class="spin"></span><span id="phase-text">正在分析…</span></div>
+    <div class="log" id="log"></div>
+  </div>
+
+  <!-- step 3 -->
+  <div class="panel hide" id="p3">
+    <div class="stats" id="stats"></div>
+    <div class="cols">
+      <div class="shotbox"><img id="shot"><div class="cap">figo 渲染真值图</div></div>
+      <div class="right">
+        <div class="sec">预制体</div>
+        <div id="prefabs"></div>
+        <div class="sec">图片资源</div>
+        <div class="sprites" id="sprites"></div>
+        <div class="sec">警告</div>
+        <div id="warnings"></div>
+      </div>
+    </div>
+    <div class="exportbar">
+      <div class="row" style="margin-top:0">
+        <select id="engine">
+          <option value="godot">Godot 4</option>
+          <option value="cocos">Cocos Creator 3.x</option>
+          <option value="unity">Unity UGUI</option>
+        </select>
+        <input type="text" id="outdir" placeholder="导出目录">
+        <button class="btn primary" id="doexport">导出工程</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- step 4 -->
+  <div class="panel hide" id="p4">
+    <div class="done">
+      <div class="big">✅</div>
+      <h2 id="donehint">已导出</h2>
+      <div class="path" id="donepath"></div>
+      <div style="margin-top:18px"><button class="btn" id="again">再转一个</button></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+let report = null;
+
+function step(n) {
+  for (let i = 1; i <= 4; i++) {
+    $('p' + i).classList.toggle('hide', i !== n);
+    $('st' + i).classList.toggle('on', i === n);
+  }
+}
+
+let scan = null;
+
+$('drop').onclick = async () => {
+  const r = await fetch('/api/pick', { method: 'POST', body: '{}' }).then(r => r.json());
+  if (r.path) { $('dir').value = r.path; await doScan(); }
+};
+$('dir').onchange = doScan;
+
+// scan the folder: list entry candidates, prefill root/viewport from the best one
+async function doScan() {
+  const dir = $('dir').value.trim();
+  if (!dir) return;
+  scan = await fetch('/api/scan', { method: 'POST', body: JSON.stringify({ dir }) }).then(r => r.json());
+  if (scan.error) { alert(scan.error); scan = null; return; }
+  const sel = $('entry');
+  sel.innerHTML = scan.htmls.map(h => `<option value="${h.file}">${h.file}</option>`).join('');
+  $('entryrow').classList.toggle('hide', scan.htmls.length < 2);
+  $('flowsrow').classList.toggle('hide', !scan.flows);
+  if (scan.flows) $('flowsinfo').textContent =
+    `发现采集配置 ${scan.flows.split('/').pop()}（${scan.flowCount} 个页面/弹窗），将全部采集`;
+  sel.onchange = applyEntry;
+  applyEntry();
+}
+
+function applyEntry() {
+  const h = scan && scan.htmls.find(x => x.file === $('entry').value);
+  if (!h) return;
+  if (h.root) $('root').value = h.root;
+  if (h.viewport) $('viewport').value = h.viewport;
+  if (h.wait) $('wait').value = h.wait;
+}
+
+$('go').onclick = async () => {
+  const dir = $('dir').value.trim();
+  if (!dir) return alert('请先选择文件夹');
+  if (!scan) await doScan();
+  const payload = { dir, entry: $('entry').value || undefined,
+                    root: $('root').value.trim() || undefined,
+                    viewport: $('viewport').value.trim() || undefined,
+                    wait: $('wait').value.trim() || undefined,
+                    states: $('states').value.trim() || undefined,
+                    anon: $('anon').checked,
+                    flows: (scan && scan.flows && $('useflows').checked) ? scan.flows : undefined };
+  const r = await fetch('/api/analyze', { method: 'POST', body: JSON.stringify(payload) }).then(r => r.json());
+  if (r.error) return alert(r.error);
+  step(2);
+  poll();
+};
+
+async function poll() {
+  const s = await fetch('/api/status').then(r => r.json());
+  $('log').textContent = s.log.join('\n');
+  $('log').scrollTop = $('log').scrollHeight;
+  if (s.phase === 'analyzing' || s.phase === 'exporting') {
+    let t = s.phase === 'analyzing' ? '正在分析…（渲染页面 → 转换 → 出报告）' : '正在导出…';
+    if (s.phase === 'analyzing' && scan && scan.flowCount) {
+      const done = s.log.filter(l => l.includes('captured ')).length;
+      t = `正在采集页面 ${done}/${scan.flowCount} …（多屏工程需要几分钟）`;
+    }
+    $('phase-text').textContent = t;
+    return setTimeout(poll, 700);
+  }
+  if (s.phase === 'error') { alert('失败：' + s.error); step(1); return; }
+  if (s.phase === 'ready') { report = s.report; renderReport(); step(3); return; }
+  if (s.phase === 'done') {
+    $('donehint').textContent = '已导出，' + (s.exportHint || '');
+    $('donepath').textContent = s.exportedTo;
+    step(4);
+    return;
+  }
+}
+
+function renderReport() {
+  const r = report;
+  const extracted = r.prefabs.filter(p => p.extracted);
+  const nWarn = r.warnings.length;
+  $('stats').innerHTML = `
+    <div class="stat"><b>${extracted.length}</b><i>预制体</i></div>
+    <div class="stat"><b>${r.sprites.length}</b><i>图片（去重后）</i></div>
+    <div class="stat"><b>${r.frames.length}</b><i>画面</i></div>
+    <div class="stat ${nWarn ? 'warn' : ''}"><b>${nWarn}</b><i>警告</i></div>`;
+
+  if (r.shot) { $('shot').src = r.shot; $('shot').onload = drawThumbs; }
+  else $('shot').parentElement.classList.add('hide');
+
+  $('prefabs').innerHTML = r.prefabs.map((p, i) => `
+    <div class="pcard">
+      <canvas id="th${i}" width="168" height="96"></canvas>
+      <div class="grow">
+        <div class="nm">${p.name}</div>
+        <div class="ct">${p.count ? '×' + p.count + ' 实例' : '结构复用组'}${p.screens > 1 ? ' · 见于 ' + p.screens + ' 屏' : ''}${p.reason ? ' · ' + p.reason : ''}</div>
+      </div>
+      ${p.extracted
+        ? `<span class="tag">导出预制体</span><span class="switch"><input type="checkbox" checked data-name="${p.name}"><span class="tr"></span></span>`
+        : `<span class="tag off">内联</span>`}
+    </div>`).join('');
+
+  $('sprites').innerHTML = r.sprites.slice(0, 24).map(f => `<img src="/files/${f}">`).join('')
+    + (r.sprites.length > 24 ? `<span style="font-size:12px;color:#7d8694;align-self:center">…共 ${r.sprites.length} 张</span>` : '');
+
+  $('warnings').innerHTML = nWarn
+    ? `<div class="warnbox">${r.warnings.map(w => '• ' + w).join('<br>')}</div>`
+    : '<div class="okbox">无 — 字体、文本、裁切都干净</div>';
+
+  for (const opt of $('engine').options) {
+    opt.disabled = r.engines && !r.engines[opt.value];
+    if (opt.disabled) opt.textContent += '（未构建）';
+  }
+  syncOutDir();
+}
+
+function syncOutDir() {
+  $('outdir').value = report.suggestedOutBase + '-' + $('engine').value;
+}
+
+function drawThumbs() {
+  const img = $('shot');
+  const s = report.shotScale;
+  report.prefabs.forEach((p, i) => {
+    const cv = $('th' + i);
+    if (!cv || !p.rect) return;
+    const ctx = cv.getContext('2d');
+    const pad = 4;
+    const sx = Math.max(0, (p.rect.x - pad) * s), sy = Math.max(0, (p.rect.y - pad) * s);
+    const sw = (p.rect.w + pad * 2) * s, sh = (p.rect.h + pad * 2) * s;
+    const k = Math.min(cv.width / sw, cv.height / sh);
+    const dw = sw * k, dh = sh * k;
+    ctx.fillStyle = '#0a0d13';
+    ctx.fillRect(0, 0, cv.width, cv.height);
+    ctx.drawImage(img, sx, sy, sw, sh, (cv.width - dw) / 2, (cv.height - dh) / 2, dw, dh);
+  });
+}
+
+$('engine').onchange = syncOutDir;
+
+$('doexport').onclick = async () => {
+  const exclude = [...document.querySelectorAll('#prefabs input[type=checkbox]')]
+    .filter(c => !c.checked).map(c => c.dataset.name);
+  const r = await fetch('/api/export', { method: 'POST',
+    body: JSON.stringify({ outDir: $('outdir').value.trim(), exclude,
+                           engine: $('engine').value }) }).then(r => r.json());
+  if (r.error) return alert(r.error);
+  step(2);
+  $('phase-text').textContent = '正在导出…';
+  poll();
+};
+
+$('again').onclick = () => location.reload();
+</script>
+</body>
+</html>

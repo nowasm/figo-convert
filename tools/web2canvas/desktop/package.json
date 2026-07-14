@@ -1,0 +1,16 @@
+{
+  "name": "figo-export-wizard",
+  "productName": "figo 导出向导",
+  "version": "0.1.0",
+  "description": "HTML → Godot 预制体导出向导（开文件夹 → 看报告 → 点导出）",
+  "main": "main.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "pack": "node pack.js"
+  },
+  "devDependencies": {
+    "@electron/packager": "^20.0.2",
+    "electron": "^43.1.0"
+  }
+}

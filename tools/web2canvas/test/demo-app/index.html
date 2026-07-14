@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Squad Lobby</title>
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: -apple-system, 'Segoe UI', sans-serif; }
+  #stage { width: 420px; height: 900px; background: #0d1017; padding: 24px 20px; overflow: hidden; }
+  .heading { color: #f2f4f8; font-size: 26px; font-weight: 700; }
+  .sub { color: #7d8694; font-size: 13px; margin-top: 4px; }
+  .player-card { display: flex; align-items: center; gap: 12px; background: #171c26;
+                 border: 1px solid #232a38; border-radius: 14px; padding: 14px; margin-top: 12px; }
+  .player-card.ready { border-color: #2ea86a; }
+  .avatar { width: 44px; height: 44px; border-radius: 50%; flex: none; }
+  .pinfo { flex: 1; }
+  .pname { color: #e8ebf0; font-size: 15px; font-weight: 600; }
+  .plevel { color: #7d8694; font-size: 12px; margin-top: 3px; }
+  .badge { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 10px; }
+  .badge.on  { background: #143526; color: #4fd58f; }
+  .badge.off { background: #2a2f3a; color: #8b93a1; }
+  .section { color: #aeb6c2; font-size: 13px; font-weight: 600; margin-top: 22px;
+             letter-spacing: 1px; }
+  .action-row { display: flex; gap: 10px; margin-top: 12px; }
+  .action-btn { flex: 1; height: 46px; border-radius: 12px; background: #1b2230;
+                border: none; display: flex; align-items: center; justify-content: center; gap: 7px; }
+  .action-btn .dot { width: 8px; height: 8px; border-radius: 50%; background: #5a6475; }
+  .action-btn .blabel { color: #c9d2de; font-size: 14px; font-weight: 600; }
+  .action-btn .bkey { font-size: 10px; color: #6b7484; background: #262d3b;
+                      border-radius: 6px; padding: 2px 6px; font-weight: 700; }
+  .action-btn.primary { background: #3a7bff; }
+  .action-btn.primary .bkey { color: #dbe7ff; background: #2c62d9; }
+  .action-btn.primary .dot { background: #bcd2ff; }
+  .action-btn.primary .blabel { color: #ffffff; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script type="text/babel">
+const { createRoot } = ReactDOM;
+
+function PlayerCard({ name, level, color, ready }) {
+  return (
+    <div className={'player-card' + (ready ? ' ready' : '')}>
+      <div className="avatar" style={{ background: color }} />
+      <div className="pinfo">
+        <div className="pname">{name}</div>
+        <div className="plevel">Lv.{level} · Assault</div>
+      </div>
+      <div className={'badge ' + (ready ? 'on' : 'off')}>{ready ? 'READY' : 'IDLE'}</div>
+    </div>
+  );
+}
+
+function ActionButton({ label, primary, hotkey }) {
+  const key = hotkey;
+  return (
+    <button className={'action-btn' + (primary ? ' primary' : '')}>
+      <span className="dot" />
+      <span className="blabel">{label}</span>
+      <span className="bkey">{key}</span>
+    </button>
+  );
+}
+
+function Lobby() {
+  const players = [
+    { name: 'NOVA-7',   level: 42, color: '#e2574c', ready: true },
+    { name: 'Kestrel',  level: 38, color: '#3a7bff', ready: true },
+    { name: 'Mag_Dump', level: 51, color: '#c7a53a', ready: false },
+    { name: 'Wraith',   level: 29, color: '#7a4ccf', ready: false },
+    { name: 'Bolt',     level: 45, color: '#2ea86a', ready: true },
+  ];
+  return (
+    <div>
+      <div className="heading">Squad Lobby</div>
+      <div className="sub">5 players · Ranked · Dust Line</div>
+      <div className="section">TEAM ALPHA</div>
+      {players.map(p => <PlayerCard key={p.name} {...p} />)}
+      <div className="section">MATCH</div>
+      <div className="action-row">
+        <ActionButton label="Invite" hotkey="F1" />
+        <ActionButton label="Loadout" hotkey="F2" />
+        <ActionButton label="Start" hotkey="SP" primary />
+      </div>
+    </div>
+  );
+}
+
+createRoot(document.getElementById('stage')).render(<Lobby />);
+</script>
+</body>
+</html>
