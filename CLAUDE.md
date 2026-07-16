@@ -65,7 +65,16 @@ staged 到 `build_unityplugin/`，拷进任意 Unity 工程 Assets/ 即可用/�
   （半透明 alpha 预补偿），交付前先问清 ProjectSettings 的 m_ActiveColorSpace。
 - web2canvas 用系统已装 Edge/Chrome（playwright-core 不下载浏览器）；首次
   `cd tools/web2canvas && npm install`。Google Fonts 抓取时被屏蔽，用 `--fonts`
-  指本地字体。只抓屏幕级状态（`window.__nav`），点击弹层/视口外滚动内容抓不到。
+  指本地字体。只抓屏幕级状态（`window.__nav`），点击弹层/视口外滚动内容抓不到——
+  抓不到的用 `--manual`（有头窗口 + 页面内工具条，人工摆好画面逐屏点采集；工具条
+  可拖 ⠿ 换位置；「❄ 冻结」暂停 CSS/WAAPI 动画（CDP playbackRate 0）并把 setTimeout
+  回调停车拦截——先冻结再触发 1-2 秒自动消失的 toast/弹层就能定住慢慢选；「🎯 拾取
+  节点」点选后先绿框预览 + 「📦 导出此节点」确认，才只采该子树并**强制**导出为
+  预制体——comp 名写入 design.pins.json，figo2X 经 `--prefab-pin` 豁免 ≥2 实例/
+  占满全屏/≥3 后代三道闸）；`--append` 在 -o/--out 已有 canvas.json 上续帧
+  （分工：CLI AI 自动批量，desktop 导出向导默认手动采集，漏采的屏/组件用
+  "追加到已有采集"人工补全；GUI 导出目录自带 .web2canvas/ 采集数据 + pins，
+  可直接作为追加基底）。
 - .fig 输入靠 fig2json（`../fig2json`，Rust）转 canvas.json，缓存于
   `<file>.fig.export/`；没有 fig2json 时给转换器喂 canvas.json / REST JSON。
 - 历史坑速查：`docs/agent-memory/`（构建目录缓存指向失效路径、React→Godot

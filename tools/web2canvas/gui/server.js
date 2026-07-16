@@ -299,6 +299,21 @@ async function analyze(dir, opts) {
   if (!FIGO2GODOT) throw new Error('找不到 figo2godot，可在仓库 build/ 下构建，或设 FIGO2GODOT 环境变量');
   const argv = [path.join(TOOL_DIR, 'html2godot.js'), entry,
                 '--out', job.staging, '--prefabs', '--figo2godot', FIGO2GODOT];
+  if (opts.appendTo) {
+    // top-up mode: seed staging with a previous capture (an exported project or
+    // a CLI --out dir — anything holding .web2canvas/) and let index.js append
+    const baseW2c = path.join(opts.appendTo, '.web2canvas');
+    if (!fs.existsSync(path.join(baseW2c, 'design.canvas.json')))
+      throw new Error('追加目录里没有 .web2canvas/design.canvas.json——请选择上次的导出目录（或 CLI 的 --out 目录）');
+    const dst = path.join(job.staging, '.web2canvas');
+    fs.mkdirSync(dst, { recursive: true });
+    for (const n of ['design.canvas.json', 'design.web.png', 'design.pins.json'])
+      if (fs.existsSync(path.join(baseW2c, n))) fs.copyFileSync(path.join(baseW2c, n), path.join(dst, n));
+    if (fs.existsSync(path.join(baseW2c, 'images')))
+      fs.cpSync(path.join(baseW2c, 'images'), path.join(dst, 'images'), { recursive: true });
+    argv.push('--append');
+    logLine(`追加采集：基于 ${opts.appendTo}`);
+  }
   if (electronCapture) {
     // desktop app: capture inside our own bundled Chromium — no system browser
     argv.push('--electron', electronCapture.exe);
@@ -311,7 +326,8 @@ async function analyze(dir, opts) {
   if (opts.root) argv.push('--root', opts.root);
   if (opts.viewport) argv.push('--viewport', opts.viewport);
   if (opts.wait) argv.push('--wait', String(opts.wait));
-  if (opts.flows) argv.push('--flows', opts.flows);
+  if (opts.manual) argv.push('--manual');   // human-driven: in-page toolbar in the capture window
+  else if (opts.flows) argv.push('--flows', opts.flows);
   else if (opts.states) argv.push('--states', opts.states);
   if (opts.anon) argv.push('--prefab-anon');   // plain-HTML pages: dedupe repeated anonymous structures
   if (opts.fonts) argv.push('--fonts', opts.fonts);
@@ -320,9 +336,12 @@ async function analyze(dir, opts) {
   job.phase = 'ready';
 }
 
+// .web2canvas/ (capture data: design.canvas.json + raster images) ships WITH
+// the export: engines ignore dot-directories, and it makes the exported folder
+// a valid base for a later 追加采集 (manual top-up of missed screens).
 function copyOutput(from, to) {
   fs.mkdirSync(to, { recursive: true });
-  fs.cpSync(from, to, { recursive: true, filter: (src) => !path.basename(src).startsWith('.web2canvas') });
+  fs.cpSync(from, to, { recursive: true });
 }
 
 async function doExport(outDir, exclude, engine = 'godot') {
@@ -336,11 +355,21 @@ async function doExport(outDir, exclude, engine = 'godot') {
     // with no exclusions skips this and copies the staging output directly
     const redo = fs.mkdtempSync(path.join(os.tmpdir(), 'w2c-gui-x-'));
     const argv = [path.join(job.staging, '.web2canvas', 'design.canvas.json'), redo, '--prefabs'];
+    const pinsFile = path.join(job.staging, '.web2canvas', 'design.pins.json');
+    if (fs.existsSync(pinsFile)) {
+      try {
+        const pins = JSON.parse(fs.readFileSync(pinsFile, 'utf8')).filter(p => !exclude.includes(p));
+        if (pins.length) argv.push('--prefab-pin', pins.join(','));
+      } catch (e) { /* malformed sidecar: ignore */ }
+    }
     if (exclude.length) argv.push('--no-prefab', exclude.join(','));
     await run(eng.bin, argv);
     from = redo;
   }
   copyOutput(from, outDir);
+  // the redo dir has no capture data — carry it over so this export is appendable too
+  if (from !== job.staging)
+    fs.cpSync(path.join(job.staging, '.web2canvas'), path.join(outDir, '.web2canvas'), { recursive: true });
   job.exportedTo = outDir;
   job.exportHint = eng.hint;
   job.phase = 'done';
@@ -401,12 +430,15 @@ const server = http.createServer(async (req, res) => {
       return sendJson(res, scanFolder(path.resolve(dir)));
     }
     if (url === '/api/analyze' && req.method === 'POST') {
-      const { dir, entry, root, viewport, wait, states, anon, flows } = await body(req);
+      const { dir, entry, root, viewport, wait, states, anon, flows, manual, appendTo } = await body(req);
       if (!dir || !fs.existsSync(dir) || !fs.statSync(dir).isDirectory())
         return sendJson(res, { error: '不是有效的文件夹路径' }, 400);
+      if (appendTo && !fs.existsSync(path.join(appendTo, '.web2canvas', 'design.canvas.json')))
+        return sendJson(res, { error: '追加目录里没有 .web2canvas/design.canvas.json——请选择上次的导出目录' }, 400);
       if (job.phase === 'analyzing' || job.phase === 'exporting')
         return sendJson(res, { error: '已有任务在进行中' }, 409);
-      analyze(path.resolve(dir), { entry, root, viewport, wait, states, anon: !!anon, flows })
+      analyze(path.resolve(dir), { entry, root, viewport, wait, states, anon: !!anon, flows,
+                                   manual: !!manual, appendTo: appendTo ? path.resolve(appendTo) : null })
         .catch(e => { job.phase = 'error'; job.error = e.message; logLine('ERROR: ' + e.message); });
       return sendJson(res, { ok: true });
     }

@@ -102,6 +102,14 @@
       <input type="text" id="dir" placeholder="或直接粘贴文件夹路径…">
       <button class="btn primary" id="go">分析</button>
     </div>
+    <div class="row">
+      <select id="capmode" style="flex:none">
+        <option value="manual">手动采集 — 在窗口里逐屏点「采集」（可开弹窗）</option>
+        <option value="auto">自动批量 — 按 states / flows 脚本采集</option>
+      </select>
+      <input type="text" id="basedir" placeholder="可选：追加到已有采集（选上次的导出目录，补漏用）">
+      <button class="btn" id="pickbase" style="flex:none">选目录…</button>
+    </div>
     <div class="row hide" id="flowsrow">
       <label style="display:flex;align-items:center;gap:8px;flex:1;font-size:12px;color:#4fd58f;cursor:pointer">
         <input type="checkbox" id="useflows" checked style="flex:none;width:auto">
@@ -120,7 +128,7 @@
         <label>视口 <input type="text" id="viewport" placeholder="420x900"></label>
         <label>等待 ms <input type="text" id="wait" placeholder="2500"></label>
       </div>
-      <div class="row">
+      <div class="row" id="statesrow">
         <label>多屏 states <input type="text" id="states" placeholder="逗号分隔，页面需有 window.__nav 钩子（可留空）"></label>
       </div>
       <div class="row">
@@ -128,8 +136,9 @@
           按结构重复识别预制体（页面不是 React 时勾选）</label>
       </div>
     </div>
-    <div class="hint">分析会在真实浏览器里渲染页面并做一次完整转换（不落盘到你的目录），
-      React 组件自动识别为预制体候选；多屏/弹窗采集请用 CLI 的 --states / --flows。</div>
+    <div class="hint">手动采集：分析会打开一个页面窗口，你自己切屏/开弹窗，每摆好一屏点「📸 采集本屏」，
+      全部采完点「✅ 完成」出报告；AI 自动批量请用 CLI（--states / --flows），漏采的屏幕再用这里的
+      「追加到已有采集」手动补全。React 组件自动识别为预制体候选。</div>
   </div>
 
   <!-- step 2 -->
@@ -195,6 +204,21 @@ $('drop').onclick = async () => {
 };
 $('dir').onchange = doScan;
 
+$('pickbase').onclick = async () => {
+  const r = await fetch('/api/pick', { method: 'POST',
+    body: JSON.stringify({ prompt: '选择上次的导出目录（含 .web2canvas）' }) }).then(r => r.json());
+  if (r.path) $('basedir').value = r.path;
+};
+
+// manual mode drives capture by hand — the scripted states/flows options don't apply
+function syncCapMode() {
+  const manual = $('capmode').value === 'manual';
+  $('statesrow').classList.toggle('hide', manual);
+  $('flowsrow').classList.toggle('hide', manual || !(scan && scan.flows));
+}
+$('capmode').onchange = syncCapMode;
+syncCapMode();
+
 // scan the folder: list entry candidates, prefill root/viewport from the best one
 async function doScan() {
   const dir = $('dir').value.trim();
@@ -204,7 +228,7 @@ async function doScan() {
   const sel = $('entry');
   sel.innerHTML = scan.htmls.map(h => `<option value="${h.file}">${h.file}</option>`).join('');
   $('entryrow').classList.toggle('hide', scan.htmls.length < 2);
-  $('flowsrow').classList.toggle('hide', !scan.flows);
+  syncCapMode();
   if (scan.flows) $('flowsinfo').textContent =
     `发现采集配置 ${scan.flows.split('/').pop()}（${scan.flowCount} 个页面/弹窗），将全部采集`;
   sel.onchange = applyEntry;
@@ -219,17 +243,22 @@ function applyEntry() {
   if (h.wait) $('wait').value = h.wait;
 }
 
+let manualRun = false;
+
 $('go').onclick = async () => {
   const dir = $('dir').value.trim();
   if (!dir) return alert('请先选择文件夹');
   if (!scan) await doScan();
+  manualRun = $('capmode').value === 'manual';
   const payload = { dir, entry: $('entry').value || undefined,
                     root: $('root').value.trim() || undefined,
                     viewport: $('viewport').value.trim() || undefined,
                     wait: $('wait').value.trim() || undefined,
-                    states: $('states').value.trim() || undefined,
+                    manual: manualRun,
+                    appendTo: $('basedir').value.trim() || undefined,
+                    states: manualRun ? undefined : ($('states').value.trim() || undefined),
                     anon: $('anon').checked,
-                    flows: (scan && scan.flows && $('useflows').checked) ? scan.flows : undefined };
+                    flows: (!manualRun && scan && scan.flows && $('useflows').checked) ? scan.flows : undefined };
   const r = await fetch('/api/analyze', { method: 'POST', body: JSON.stringify(payload) }).then(r => r.json());
   if (r.error) return alert(r.error);
   step(2);
@@ -242,7 +271,10 @@ async function poll() {
   $('log').scrollTop = $('log').scrollHeight;
   if (s.phase === 'analyzing' || s.phase === 'exporting') {
     let t = s.phase === 'analyzing' ? '正在分析…（渲染页面 → 转换 → 出报告）' : '正在导出…';
-    if (s.phase === 'analyzing' && scan && scan.flowCount) {
+    if (s.phase === 'analyzing' && manualRun) {
+      const done = s.log.filter(l => l.includes('captured ')).length;
+      t = `手动采集中（已采 ${done} 屏）— 到页面窗口里摆好画面点「📸 采集本屏」，全部采完点「✅ 完成」`;
+    } else if (s.phase === 'analyzing' && scan && scan.flowCount) {
       const done = s.log.filter(l => l.includes('captured ')).length;
       t = `正在采集页面 ${done}/${scan.flowCount} …（多屏工程需要几分钟）`;
     }

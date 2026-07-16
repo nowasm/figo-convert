@@ -26,7 +26,8 @@ function parseArgs(argv) {
   const a = { input: null, out: null, root: 'body', vw: 1280, vh: 720,
               browser: 'msedge', wait: 400, scale: 2, fonts: null, states: null,
               flows: null, navFn: '__nav', navReset: '__w2c_reset__', aiName: false,
-              pick: false, pickKey: 'f', pickAt: null, pickFreezeAt: null, open: null };
+              pick: false, pickKey: 'f', pickAt: null, pickFreezeAt: null, open: null,
+              manual: false, append: false };
   for (let i = 2; i < argv.length; i++) {
     const t = argv[i];
     if (t === '-o' || t === '--out') a.out = argv[++i];
@@ -49,6 +50,8 @@ function parseArgs(argv) {
     else if (t === '--pick-freeze') { const m = /(-?\d+)\s*,\s*(-?\d+)/.exec(argv[++i] || ''); if (m) a.pickFreezeAt = { x: +m[1], y: +m[2] }; }
     else if (t === '--open') a.open = true;
     else if (t === '--no-open') a.open = false;
+    else if (t === '--manual') a.manual = true;   // human-driven capture: in-page toolbar, one click per frame
+    else if (t === '--append') a.append = true;   // continue an existing canvas.json at -o (merge base + new frames)
     else if (!t.startsWith('-')) a.input = t;
   }
   return a;
@@ -1145,6 +1148,228 @@ async function interactivePick(page, pickKey, at, freezeAt) {
   await picked;   // forced :hover stays on through collection so the picked UI keeps rendering
 }
 
+// ---- manual capture mode ----------------------------------------------------
+// Human-driven capture (--manual): a floating in-page toolbar. The user stages
+// the UI by hand (navigate, open popups, toggle states) and snapshots each
+// staged screen as one frame — the complement of the scripted --states/--flows
+// batch path, used to fill in whatever an automated capture missed. The bar is
+// attached to documentElement (a body-rooted collect never sees it) and hides
+// itself the moment a capture starts, so it appears in no screenshot.
+function manualToolbarFn(startIdx) {
+  if (window.__w2cManualUi) return;
+  const Z = '2147483647';
+
+  // ── timer gate: ❄ freeze keeps transient UI (toast / auto-dismiss overlay)
+  // on screen. While frozen, timer callbacks the page schedules are PARKED
+  // instead of run (a toast's self-remove never fires); unfreezing flushes
+  // them. Timers created before this patch (page boot) keep running — the
+  // dismiss timer of a 1-2s toast is scheduled when the toast SHOWS, so
+  // freezing before triggering it is enough. CSS/WAAPI animations are frozen
+  // via CDP by the Node side (__w2cFreezeAnim).
+  const gate = { frozen: false, parked: [] };
+  const oSetT = window.setTimeout.bind(window);
+  window.setTimeout = (fn, ms, ...rest) => oSetT(
+    typeof fn === 'function'
+      ? function (...a) { if (gate.frozen) gate.parked.push(() => fn.apply(this, a)); else fn.apply(this, a); }
+      : fn, ms, ...rest);
+  const oSetI = window.setInterval.bind(window);
+  window.setInterval = (fn, ms, ...rest) => oSetI(
+    typeof fn === 'function'
+      ? function (...a) { if (!gate.frozen) fn.apply(this, a); }   // frozen interval ticks drop (no flood)
+      : fn, ms, ...rest);
+
+  const bar = document.createElement('div');
+  bar.setAttribute('data-w2c-ui', '');
+  bar.style.cssText = `position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:${Z};` +
+    'display:flex;gap:8px;align-items:center;background:rgba(10,13,19,.92);border:1px solid #2a3242;' +
+    'border-radius:12px;padding:10px 12px;font:13px/1.4 system-ui,sans-serif;color:#e8ebf0;' +
+    'box-shadow:0 6px 24px rgba(0,0,0,.5)';
+  const btnCss = 'border:none;border-radius:8px;padding:7px 12px;font-weight:600;cursor:pointer;white-space:nowrap';
+  bar.innerHTML =
+    '<span data-w2c-drag title="拖动换位置（别挡住设计稿）" style="cursor:grab;color:#5d6674;' +
+      'font-size:16px;padding:0 2px;user-select:none">⠿</span>' +
+    '<span data-w2c-count style="color:#7d8694;white-space:nowrap">已采集 0 屏</span>' +
+    `<span data-w2c-selinfo style="display:none;color:#4fd58f;font:12px monospace;white-space:nowrap"></span>` +
+    '<input data-w2c-name style="width:130px;background:#0d1119;border:1px solid #262d3b;color:#e8ebf0;' +
+      'border-radius:8px;padding:6px 8px;font:12px monospace" title="本屏/预制体名称（对应场景与文件名，建议英文）">' +
+    `<button data-w2c-shoot style="background:#3a7bff;color:#fff;${btnCss}">📸 采集本屏</button>` +
+    `<button data-w2c-pickbtn style="background:#1b2230;color:#c9d2de;${btnCss}">🎯 拾取节点</button>` +
+    `<button data-w2c-freeze title="冻结页面：暂停动画并拦住定时消失的弹层/提示" ` +
+      `style="background:#1b2230;color:#c9d2de;${btnCss}">❄ 冻结</button>` +
+    `<button data-w2c-export style="display:none;background:#4fd58f;color:#0d1119;${btnCss}">📦 导出此节点</button>` +
+    `<button data-w2c-resel style="display:none;background:#1b2230;color:#c9d2de;${btnCss}">↩ 重选</button>` +
+    `<button data-w2c-unsel style="display:none;background:#1b2230;color:#c9d2de;${btnCss}">✕ 取消</button>` +
+    `<button data-w2c-finish style="background:#1b2230;color:#c9d2de;${btnCss}">✅ 完成</button>`;
+  // pick-mode hover highlight + size tag (pointer-events:none — never intercepts)
+  const hl = document.createElement('div');
+  hl.setAttribute('data-w2c-ui', '');
+  hl.style.cssText = `position:fixed;z-index:${Z};pointer-events:none;border:2px solid #4af;` +
+    'background:rgba(68,170,255,.15);box-sizing:border-box;display:none';
+  const tag = document.createElement('div');
+  tag.setAttribute('data-w2c-ui', '');
+  tag.style.cssText = `position:fixed;z-index:${Z};pointer-events:none;background:#4af;color:#fff;` +
+    'font:11px/1.4 monospace;padding:1px 5px;border-radius:3px;display:none;white-space:nowrap';
+  document.documentElement.appendChild(bar);
+  document.documentElement.appendChild(hl);
+  document.documentElement.appendChild(tag);
+  const q = s => bar.querySelector(s);
+  const nameEl = q('[data-w2c-name]'), countEl = q('[data-w2c-count]'), selInfo = q('[data-w2c-selinfo]');
+  const shootBtn = q('[data-w2c-shoot]'), pickBtn = q('[data-w2c-pickbtn]'), freezeBtn = q('[data-w2c-freeze]');
+  const exportBtn = q('[data-w2c-export]'), reselBtn = q('[data-w2c-resel]'), unselBtn = q('[data-w2c-unsel]');
+  const finishBtn = q('[data-w2c-finish]');
+  let idx = startIdx, shots = 0;
+  nameEl.value = 'screen_' + idx;
+  // keep typing in the name field from triggering the page's own hotkeys
+  for (const ev of ['keydown', 'keyup', 'keypress']) nameEl.addEventListener(ev, e => e.stopPropagation(), true);
+  const nodeLabel = (el) => {
+    const cls = (typeof el.className === 'string' && el.className.trim()) ? '.' + el.className.trim().split(/\s+/)[0] : '';
+    const r = el.getBoundingClientRect();
+    return `${el.tagName.toLowerCase()}${cls}  ${Math.round(r.width)}×${Math.round(r.height)}`;
+  };
+  const boxAt = (el, color, bg) => {
+    const r = el.getBoundingClientRect();
+    hl.style.left = r.left + 'px'; hl.style.top = r.top + 'px';
+    hl.style.width = r.width + 'px'; hl.style.height = r.height + 'px';
+    hl.style.borderColor = color; hl.style.background = bg; hl.style.display = 'block';
+    tag.textContent = nodeLabel(el); tag.style.background = color;
+    tag.style.left = r.left + 'px'; tag.style.top = Math.max(0, r.top - 18) + 'px'; tag.style.display = 'block';
+  };
+
+  // ── draggable: grab the ⠿ handle to move the bar off the design ──
+  q('[data-w2c-drag]').addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    const r = bar.getBoundingClientRect();
+    bar.style.transform = 'none'; bar.style.bottom = 'auto';       // switch to explicit left/top
+    bar.style.left = r.left + 'px'; bar.style.top = r.top + 'px';
+    const dx = e.clientX - r.left, dy = e.clientY - r.top;
+    const move = (ev) => {
+      bar.style.left = Math.max(0, Math.min(innerWidth - r.width, ev.clientX - dx)) + 'px';
+      bar.style.top = Math.max(0, Math.min(innerHeight - r.height, ev.clientY - dy)) + 'px';
+    };
+    const up = () => { removeEventListener('pointermove', move, true); removeEventListener('pointerup', up, true); };
+    addEventListener('pointermove', move, true);
+    addEventListener('pointerup', up, true);
+  });
+
+  // ── ❄ freeze toggle ──
+  const setFreeze = (on) => {
+    gate.frozen = on;
+    freezeBtn.style.background = on ? '#1d3a75' : '#1b2230';
+    freezeBtn.style.color = on ? '#9cd0ff' : '#c9d2de';
+    freezeBtn.textContent = on ? '❄ 已冻结' : '❄ 冻结';
+    if (!on) { const fs = gate.parked.splice(0); for (const f of fs) { try { f(); } catch (e) {} } }
+    if (window.__w2cFreezeAnim) window.__w2cFreezeAnim(on);
+  };
+  freezeBtn.onclick = () => setFreeze(!gate.frozen);
+
+  // ── pick -> preview -> confirm export ──
+  // 🎯 enters pick mode (hover highlight, click selects). Selecting SHOWS the
+  // node (green box + label) and swaps the bar to 导出/重选/取消 — nothing is
+  // captured until 「📦 导出此节点」 confirms.
+  let picking = false, hovered = null, selEl = null;
+  const mine = el => el && (el === hl || el === tag || el === bar || bar.contains(el));
+  const setPick = (on) => {
+    picking = on;
+    pickBtn.style.background = on ? '#e2a13a' : '#1b2230';
+    pickBtn.style.color = on ? '#0d1119' : '#c9d2de';
+    pickBtn.textContent = on ? '🎯 点击选节点（Esc 取消）' : '🎯 拾取节点';
+    if (!on) { hl.style.display = tag.style.display = 'none'; hovered = null; }
+  };
+  const setSelected = (el) => {
+    selEl = el;
+    const on = !!el;
+    for (const b of [exportBtn, reselBtn, unselBtn]) b.style.display = on ? '' : 'none';
+    selInfo.style.display = on ? '' : 'none';
+    for (const b of [shootBtn, pickBtn, finishBtn]) b.style.display = on ? 'none' : '';
+    countEl.style.display = on ? 'none' : '';
+    if (on) {
+      selInfo.textContent = '已选 ' + nodeLabel(el);
+      boxAt(el, '#4fd58f', 'rgba(79,213,143,.15)');
+      // suggest a prefab name from the node's class (only over an untouched default)
+      const cls = (typeof el.className === 'string' && el.className.trim()) ? el.className.trim().split(/\s+/)[0] : '';
+      if (cls && /^(screen|comp)_\d+$/.test(nameEl.value.trim())) nameEl.value = cls.replace(/[^A-Za-z0-9_-]/g, '');
+    } else {
+      hl.style.display = tag.style.display = 'none';
+    }
+  };
+  pickBtn.onclick = () => setPick(!picking);
+  document.addEventListener('mousemove', (e) => {
+    if (!picking) return;
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    if (!el || mine(el)) { hl.style.display = tag.style.display = 'none'; return; }
+    hovered = el;
+    boxAt(el, '#4af', 'rgba(68,170,255,.15)');
+  }, true);
+  document.addEventListener('click', (e) => {
+    if (!picking || mine(e.target)) return;         // bar buttons keep working while picking
+    e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+    const el = document.elementFromPoint(e.clientX, e.clientY) || hovered;
+    if (!el || mine(el)) return;
+    setPick(false);
+    setSelected(el);                                 // preview first — export confirms
+  }, true);
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    if (picking) setPick(false);
+    else if (selEl) setSelected(null);
+  }, true);
+
+  exportBtn.onclick = () => {
+    if (!selEl) return;
+    selEl.setAttribute('data-w2c-pick', '');
+    setSelected(null);
+    bar.style.display = 'none';
+    window.__w2cManualEvent('pick', nameEl.value.trim());
+  };
+  reselBtn.onclick = () => { setSelected(null); setPick(true); };
+  unselBtn.onclick = () => setSelected(null);
+
+  shootBtn.onclick = () => {
+    setPick(false); setSelected(null);
+    bar.style.display = 'none';
+    window.__w2cManualEvent('capture', nameEl.value.trim());
+  };
+  finishBtn.onclick = () => {
+    setPick(false); setSelected(null);
+    bar.style.display = 'none';
+    window.__w2cManualEvent('done', '');
+  };
+  // Node calls this after each frame lands: restore the bar for the next shot.
+  window.__w2cManualUi = () => {
+    shots++; idx++;
+    countEl.textContent = `已采集 ${shots} 屏`;
+    nameEl.value = 'screen_' + idx;
+    bar.style.display = 'flex';
+  };
+}
+
+// Node side: inject the toolbar, return a next-event function. Each call
+// resolves with {type:'capture'|'done', name}; closing the window counts as
+// done (frames captured so far are kept).
+async function setupManualCapture(page, startIdx) {
+  const pending = [], waiters = [];
+  const push = (ev) => waiters.length ? waiters.shift()(ev) : pending.push(ev);
+  await page.exposeFunction('__w2cManualEvent', (type, name) => push({ type, name }));
+  // ❄ freeze: CSS/WAAPI animations pause via CDP; the in-page timer gate
+  // (manualToolbarFn) parks setTimeout-driven dismissals in the same toggle.
+  let cdp = null;
+  try {
+    cdp = await page.context().newCDPSession(page);
+    await cdp.send('Animation.enable');
+  } catch (e) { /* no CDP (unexpected) — timer gate still works */ }
+  await page.exposeFunction('__w2cFreezeAnim', async (on) => {
+    try { if (cdp) await cdp.send('Animation.setPlaybackRate', { playbackRate: on ? 0 : 1 }); }
+    catch (e) {}
+  });
+  page.on('close', () => push({ type: 'done', name: '' }));
+  await page.evaluate(manualToolbarFn, startIdx);
+  console.log('\n  >>> 手动采集 — 在窗口里把画面摆好（切屏、开弹窗…），点「📸 采集本屏」抓整屏；');
+  console.log('      「🎯 拾取节点」点选组件 → 绿框预览确认 →「📦 导出此节点」强制出预制体；');
+  console.log('      会自动消失的提示/弹层先点「❄ 冻结」再触发它，就能定住慢慢选；工具条可拖 ⠿ 换位置。');
+  console.log('      逐屏重复，全部采完点「✅ 完成」。关窗 = 完成。采集进行中（工具条消失时）请勿操作页面。\n');
+  return () => pending.length ? Promise.resolve(pending.shift()) : new Promise(r => waiters.push(r));
+}
+
 function buildCaptures(a) {
   if (a.flows) {
     const raw = JSON.parse(fs.readFileSync(a.flows, 'utf8'));
@@ -1361,7 +1586,7 @@ function openInFigoedit(file) {
 
 (async () => {
   const a = parseArgs(process.argv);
-  if (!a.input) { console.error('usage: web2canvas <url|file.html> [-o out] [--root SEL] [--pick] [--pick-key KEY] [--open|--no-open] [--viewport WxH] [--states "a,b,c"] [--flows FILE] [--fonts DIR] [--ai-name] [--browser msedge|chrome] [--scale N]'); process.exit(2); }
+  if (!a.input) { console.error('usage: web2canvas <url|file.html> [-o out] [--root SEL] [--pick] [--pick-key KEY] [--open|--no-open] [--viewport WxH] [--states "a,b,c"] [--flows FILE] [--manual] [--append] [--fonts DIR] [--ai-name] [--browser msedge|chrome] [--scale N]'); process.exit(2); }
   const out = a.out || (a.pick ? 'picked.canvas.json' : a.input.replace(/\.[^.]+$/, '') + '.canvas.json');
   const outDir = path.dirname(path.resolve(out));
   const imagesDir = path.join(outDir, 'images');
@@ -1386,7 +1611,7 @@ function openInFigoedit(file) {
     page = await electronApp.firstWindow();
   } else {
     console.log(`launching ${a.browser} ...`);
-    browser = await chromium.launch({ channel: a.browser, headless: a.pickAt ? true : !a.pick });
+    browser = await chromium.launch({ channel: a.browser, headless: a.pickAt ? true : !(a.pick || a.manual) });
     page = await browser.newPage({ viewport: { width: a.vw, height: a.vh }, deviceScaleFactor: a.scale });
   }
   // Many UIs gate animations behind @media (prefers-reduced-motion: no-preference);
@@ -1436,10 +1661,27 @@ function openInFigoedit(file) {
   // Captures: each is one screen (nav target + interaction steps) and becomes
   // one top-level frame. --flows gives click-driven popups/overlays; --states is
   // the simple nav-only form; neither → a single current-screen capture.
-  const captures = buildCaptures(a);
-  const multi = captures.length > 1;
+  // --manual replaces the scripted list with human-driven toolbar events;
+  // --append loads the existing canvas.json at `out` and continues after its
+  // frames (indices, raster prefixes and layout offsets keep counting), so a
+  // manual session can fill in screens an automated batch run missed.
+  let baseFrames = [];
+  if (a.append && fs.existsSync(out)) {
+    const prev = JSON.parse(fs.readFileSync(out, 'utf8'));
+    for (const pg of (prev.document && prev.document.children) || [])
+      for (const f of pg.children || []) if (f.type === 'FRAME') baseFrames.push(f);
+    console.log(`append: continuing after ${baseFrames.length} existing frame(s) in ${out}`);
+  }
+  const baseCount = baseFrames.length;
+  const captures = a.manual ? null : buildCaptures(a);
+  const multi = a.manual || baseCount > 0 || captures.length > 1;
   const frames = [];
-  let totShot = 0, totMarks = 0, offsetX = 0;
+  let totShot = 0, totMarks = 0;
+  let offsetX = baseFrames.reduce((m, f) =>
+    Math.max(m, ((f.transform && f.transform.x) || 0) + ((f.size && f.size.x) || 0) + 60), 0);
+  const usedNames = new Set(baseFrames.map(f => f.name));
+  const pins = new Set();   // hand-picked comp names -> pins sidecar -> figo2X --prefab-pin
+  const nextManualEvent = a.manual ? await setupManualCapture(page, baseCount) : null;
   // AI naming: per-candidate live screenshots collected screen-by-screen.
   const candDir = path.join(outDir, '.ai-name');
   const candRecords = [];
@@ -1447,8 +1689,19 @@ function openInFigoedit(file) {
 
   // W2C_TRACE=1: phase markers for diagnosing capture hangs (which await stalls)
   const trace = process.env.W2C_TRACE ? (s) => console.error(`  [trace] ${s}`) : () => {};
-  for (let si = 0; si < captures.length; si++) {
-    const cap = captures[si];
+  for (let si = 0; ; si++) {
+    let cap;
+    if (a.manual) {
+      const ev = await nextManualEvent();      // toolbar visible; user stages the page
+      if (ev.type === 'done') break;
+      // 'pick': collect only the hand-picked subtree and pin it as a prefab
+      cap = { name: ev.name || null, nav: null, steps: [],
+              root: ev.type === 'pick' ? '[data-w2c-pick]' : null,
+              pickComp: ev.type === 'pick' };
+    } else {
+      if (si >= captures.length) break;
+      cap = captures[si];
+    }
     trace(`${cap.name || si}: start`);
     if (cap.nav != null) {
       // A previous capture may have opened a SHELL-level overlay (avatar/locker
@@ -1577,7 +1830,7 @@ function openInFigoedit(file) {
       }
     });
 
-    if (si === 0) await page.screenshot({ path: out.replace(/\.canvas\.json$|\.json$/, '') + '.web.png' }).catch(() => {});
+    if (si === 0 && !a.append) await page.screenshot({ path: out.replace(/\.canvas\.json$|\.json$/, '') + '.web.png' }).catch(() => {});
 
     // Strip stale data-w2c marks left by a previous capture: a plain-HTML nav
     // hook toggles display without remounting, so hidden screen A keeps its
@@ -1593,7 +1846,7 @@ function openInFigoedit(file) {
     trace(`${cap.name || si}: collect done`);
     if (!res.tree) { console.error('WARN: nothing collected for ' + (cap.name || 'page')); continue; }
     const tree = res.tree;
-    statePrefix = multi ? (si + '_') : '';
+    statePrefix = multi ? ((baseCount + si) + '_') : '';
 
     const marks = rasterMarks(tree, []);
     (function whole(n) {
@@ -1633,8 +1886,24 @@ function openInFigoedit(file) {
     totMarks += marks.length;
 
     nameCounter = 0;
-    const frame = mapNode(tree, null);
-    frame.name = cap.name || 'Page';
+    let frame = mapNode(tree, null);
+    // frame name = scene filename downstream; dedupe against base + this run
+    let nm = cap.name || (cap.pickComp ? `comp_${baseCount + si}`
+                        : a.manual ? `screen_${baseCount + si}` : 'Page');
+    while (usedNames.has(nm)) nm += '_';
+    usedNames.add(nm);
+    if (cap.pickComp) {
+      // Hand-picked node: wrap in its own frame and mark as a component root
+      // (canvas.json "comp" -> figo compType); the pins sidecar makes figo2X
+      // extract it unconditionally (--prefab-pin lifts the >=2-instance gate).
+      const inst = frame;
+      inst.name = nm; inst.comp = nm; inst.compRoot = true;
+      inst.transform = { x: 0, y: 0 };
+      frame = { type: 'FRAME', name: nm, size: { ...inst.size },
+                transform: { x: 0, y: 0 }, fillPaints: [], children: [inst] };
+      pins.add(nm);
+    }
+    frame.name = nm;
     frame.scrollDirection = 'VERTICAL';
     frame.transform = { x: offsetX, y: 0 };
     offsetX += (frame.size.x || res.rootW) + 60;
@@ -1642,6 +1911,11 @@ function openInFigoedit(file) {
     // Screenshot this screen's naming candidates while it's still mounted.
     if (a.aiName) await shotCandidates(page, frame, si, candDir, candRecords);
     console.log(`  captured ${frame.name} (${marks.length} rasters)`);
+    // restore the manual toolbar for the next shot (window may already be gone)
+    if (a.manual) await page.evaluate(() => {
+      document.querySelectorAll('[data-w2c-pick]').forEach(e => e.removeAttribute('data-w2c-pick'));
+      if (window.__w2cManualUi) window.__w2cManualUi();
+    }).catch(() => {});
   }
   // Vision-name the components (needs the browser for montage rendering).
   if (a.aiName && candRecords.length) {
@@ -1649,17 +1923,27 @@ function openInFigoedit(file) {
     catch (e) { console.error('ai-name pass failed:', e.message); }
   }
   if (a.aiName) frames.forEach(f => (function strip(n) { delete n._cand; for (const c of (n.children || [])) strip(c); })(f));
-  if (electronApp) await electronApp.close();
+  if (electronApp) await electronApp.close().catch(() => {});
   else await browser.close();
   if (server) server.close();
-  if (!frames.length) { console.error('FAIL: no frames captured'); process.exit(1); }
+  if (!frames.length && !baseFrames.length) { console.error('FAIL: no frames captured'); process.exit(1); }
 
   const doc = {
-    document: { type: 'DOCUMENT', children: [{ type: 'CANVAS', name: 'Page 1', children: frames }] },
+    document: { type: 'DOCUMENT', children: [{ type: 'CANVAS', name: 'Page 1', children: [...baseFrames, ...frames] }] },
     styles: {},
   };
   fs.writeFileSync(out, JSON.stringify(doc, null, 2));
-  console.log(`RESULT: OK  ${frames.length} frame(s)  ${totShot}/${totMarks} rasters -> ${out}`);
+  // pins sidecar: comp names figo2X must extract unconditionally (--prefab-pin);
+  // html2godot / the GUI read this and forward it. --append merges with old pins.
+  const pinsPath = out.replace(/\.canvas\.json$|\.json$/, '') + '.pins.json';
+  if (a.append && fs.existsSync(pinsPath)) {
+    try { for (const p of JSON.parse(fs.readFileSync(pinsPath, 'utf8'))) pins.add(p); } catch (e) {}
+  }
+  if (pins.size) {
+    fs.writeFileSync(pinsPath, JSON.stringify([...pins], null, 2));
+    console.log(`pinned prefab(s): ${[...pins].join(', ')} -> ${path.basename(pinsPath)}`);
+  }
+  console.log(`RESULT: OK  ${baseCount ? baseCount + '+' : ''}${frames.length} frame(s)  ${totShot}/${totMarks} rasters -> ${out}`);
   // Interactive pick (a human just Alt-clicked in a headed browser) previews in
   // figoedit by default — override with --no-open. The headless/script paths
   // (--pick-at, plain captures) leave the glue to the AI/pipeline layer

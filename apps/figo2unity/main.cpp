@@ -889,6 +889,7 @@ struct Converter {
     }
     bool inComponent = false;  // true while emitting a component prefab (no nesting-instances)
     std::set<std::string> noPrefab;   // compTypes never extracted (--no-prefab)
+    std::set<std::string> prefabPin;  // compTypes ALWAYS extracted (hand-picked captures)
     std::set<std::string> usedComps;  // comp names actually instanced by a frame
 
     // fileIDs of the objects emitted for one node of a component prefab, keyed
@@ -995,8 +996,9 @@ struct Converter {
                 Node& cn = *c;
                 const bool isComp = !cn.compType.empty();
                 const bool anon = prefabAnon && cn.compType.empty();
+                const bool pinned = isComp && prefabPin.count(cn.compType);
                 if ((isComp || anon) && !cn.children.empty() && cn.type != NodeType::Text &&
-                    !isVectorIcon(cn) && cn.width > 4 && cn.height > 4 && descendants(cn) >= 3) {
+                    (pinned || (!isVectorIcon(cn) && cn.width > 4 && cn.height > 4 && descendants(cn) >= 3))) {
                     auto& comp = compBySig[groupKey(cn)];
                     comp.count++;
                     comp.insts.push_back({ &cn, frame });
@@ -2439,7 +2441,7 @@ int main(int argc, char** argv) {
     if (argc < 2) {
         std::printf("usage: figo2unity <input.fig|canvas.json> [outDir] [--frame NAME] "
                     "[--fonts DIR] [--scale N] [--prefabs] [--prefab-anon] [--no-prefab T1,T2] "
-                    "[--tmp] [--linear]\n");
+                    "[--prefab-pin T1,T2] [--tmp] [--linear]\n");
         return 2;
     }
     const std::string input = argv[1];
@@ -2452,6 +2454,7 @@ int main(int argc, char** argv) {
     bool tmpText = false;
     bool linearFlag = false;
     std::set<std::string> noPrefabArg;
+    std::set<std::string> prefabPinArg;
     for (int i = 2; i < argc; ++i) {
         std::string a = argv[i];
         if (a == "--frame" && i + 1 < argc) onlyFrame = argv[++i];
@@ -2470,6 +2473,17 @@ int main(int argc, char** argv) {
                 if (q > p) noPrefabArg.insert(list.substr(p, q - p));
                 p = q + 1;
             }
+        }
+        else if (a == "--prefab-pin" && i + 1 < argc) {  // hand-picked comps: always extract
+            std::string list = argv[++i];
+            size_t p = 0;
+            while (p < list.size()) {
+                size_t q = list.find(',', p);
+                if (q == std::string::npos) q = list.size();
+                if (q > p) prefabPinArg.insert(list.substr(p, q - p));
+                p = q + 1;
+            }
+            prefabs = true;
         }
         else if (!a.empty() && a[0] != '-') outDir = a;
     }
@@ -2519,6 +2533,7 @@ int main(int argc, char** argv) {
     }
     cv.prefabAnon = prefabAnon;
     cv.noPrefab = noPrefabArg;
+    cv.prefabPin = prefabPinArg;
     cv.tmp = tmpText;
     cv.linearComp = linearFlag;
 
@@ -2562,8 +2577,10 @@ int main(int argc, char** argv) {
         int compCount = 0;
         for (auto& up : cv.variants) {
             Converter::Comp& comp = *up;
-            if (comp.count < 2) continue;
-            if (comp.canon->width >= comp.frame->width * 0.9f &&
+            const bool pinned = cv.prefabPin.count(comp.canon->compType) != 0;
+            if (comp.count < 2 && !pinned) continue;
+            if (!pinned &&
+                comp.canon->width >= comp.frame->width * 0.9f &&
                 comp.canon->height >= comp.frame->height * 0.9f) continue;
             if (cv.noPrefab.count(comp.canon->compType)) continue;
             std::string base;

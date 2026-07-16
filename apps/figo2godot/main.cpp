@@ -347,6 +347,9 @@ struct Converter {
                                // (no-compType) containers, not just source comps
     bool inComponent = false;  // true while emitting a component scene (no nesting-instances)
     std::set<std::string> noPrefab;  // compTypes never extracted (generic wrappers: HPanel…)
+    std::set<std::string> prefabPin; // compTypes ALWAYS extracted (hand-picked captures):
+                                     // exempt from the >=2-instance / screen-size /
+                                     // >=3-descendants gates (web2canvas --manual 拾取节点)
     std::set<std::string> usedComps; // comp names actually instanced by a frame — only
                                      // these get a .tscn (a comp used only NESTED inside
                                      // another comp is inlined there, never instanced)
@@ -583,8 +586,9 @@ struct Converter {
                 // coincidental same-shape match never breaks a frame visually.
                 const bool isComp = !cn.compType.empty();
                 const bool anon = prefabAnon && cn.compType.empty();
+                const bool pinned = isComp && prefabPin.count(cn.compType);
                 if ((isComp || anon) && !cn.children.empty() && cn.type != NodeType::Text &&
-                    !isVectorIcon(cn) && cn.width > 4 && cn.height > 4 && descendants(cn) >= 3) {
+                    (pinned || (!isVectorIcon(cn) && cn.width > 4 && cn.height > 4 && descendants(cn) >= 3))) {
                     auto& comp = compBySig[groupKey(cn)];
                     comp.count++;
                     comp.insts.push_back({ &cn, frame });
@@ -1861,7 +1865,7 @@ static std::vector<FontEntry> loadFonts(const fs::path& fontsSrc, const fs::path
 int main(int argc, char** argv) {
     if (argc < 2) {
         std::printf("usage: figo2godot <input> [outDir] [--frame NAME] [--fonts DIR] "
-                    "[--scale N] [--prefabs] [--prefab-anon] [--no-prefab T1,T2]\n");
+                    "[--scale N] [--prefabs] [--prefab-anon] [--no-prefab T1,T2] [--prefab-pin T1,T2]\n");
         return 2;
     }
     const std::string input = argv[1];
@@ -1872,6 +1876,15 @@ int main(int argc, char** argv) {
     bool prefabs = false;
     bool prefabAnon = false;
     std::set<std::string> noPrefabArg;
+    std::set<std::string> prefabPinArg;
+    auto parseList = [](const std::string& list, std::set<std::string>& out) {
+        std::string tok;
+        for (char c : list) {
+            if (c == ',') { if (!tok.empty()) out.insert(tok); tok.clear(); }
+            else tok.push_back(c);
+        }
+        if (!tok.empty()) out.insert(tok);
+    };
     for (int i = 2; i < argc; ++i) {
         std::string a = argv[i];
         if (a == "--frame" && i + 1 < argc)
@@ -1884,13 +1897,11 @@ int main(int argc, char** argv) {
             prefabs = true;
         else if (a == "--prefab-anon")  // also extract repeated anonymous containers
             prefabs = prefabAnon = true;
-        else if (a == "--no-prefab" && i + 1 < argc) {
-            std::string list = argv[++i], tok;
-            for (char c : list) {
-                if (c == ',') { if (!tok.empty()) noPrefabArg.insert(tok); tok.clear(); }
-                else tok.push_back(c);
-            }
-            if (!tok.empty()) noPrefabArg.insert(tok);
+        else if (a == "--no-prefab" && i + 1 < argc)
+            parseList(argv[++i], noPrefabArg);
+        else if (a == "--prefab-pin" && i + 1 < argc) {  // hand-picked comps: always extract
+            parseList(argv[++i], prefabPinArg);
+            prefabs = true;
         }
         else if (!a.empty() && a[0] != '-')
             outDir = a;
@@ -1925,6 +1936,7 @@ int main(int argc, char** argv) {
     cv.ui = ui.get();
     cv.prefabAnon = prefabAnon;  // read by scanComponents (pre-pass) below
     cv.noPrefab = noPrefabArg;
+    cv.prefabPin = prefabPinArg;
     cv.outDir = outDir;
     cv.spritesDir = spritesDir;
     cv.superScale = scale;
@@ -1973,10 +1985,14 @@ int main(int argc, char** argv) {
         int compCount = 0;
         for (auto& up : cv.variants) {
             Converter::Comp& comp = *up;
-            if (comp.count < 2) continue;
+            // Pinned comps (hand-picked capture) always extract — a pick frame IS
+            // exactly its component, so both gates below would wrongly reject it.
+            const bool pinned = cv.prefabPin.count(comp.canon->compType) != 0;
+            if (comp.count < 2 && !pinned) continue;
             // Screen-level guard: a component covering ~the whole frame is a SCREEN
             // container (Lobby, HudC…), not a reusable widget — never extract it.
-            if (comp.canon->width >= comp.frame->width * 0.9f &&
+            if (!pinned &&
+                comp.canon->width >= comp.frame->width * 0.9f &&
                 comp.canon->height >= comp.frame->height * 0.9f) continue;
             // User-declared generic wrappers (--no-prefab HPanel,HRow) never extract.
             if (cv.noPrefab.count(comp.canon->compType)) continue;
