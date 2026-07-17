@@ -54,7 +54,10 @@ using figo::NodeType;
 // PNG encoding is shared across the three exporters (Paeth + real deflate).
 #include "../anim_tracks.h"
 #include "../exporter_png.h"
+// Backdrop-blur (glass) background bake, shared across the three exporters.
+#include "../glass_bake.h"
 using figopng::writePng;
+using figoglass::backdropBlurRadius;
 
 // ===================== helpers ==============================================
 
@@ -1111,6 +1114,15 @@ struct Converter {
         std::vector<Node*> one{clone.get()};
         if (!ui->renderer().renderOverlay(one, 0.0f, buf, bw, bh)) return out;
 
+        return packSprite(buf, bw, bh, n, scale, tryNine, nineOnly);
+    }
+
+    // bake()'s tail, shared with bakeGlass(): crop the painted bbox out of a
+    // frame-sized buffer, dedup by content hash, write the PNG (+.meta), and
+    // return logical frame-absolute coords.
+    Baked packSprite(std::vector<uint32_t>& buf, uint32_t bw, uint32_t bh, const Node& n,
+                     int scale, bool tryNine = false, bool nineOnly = false) {
+        Baked out;
         int x0 = bw, y0 = bh, x1 = -1, y1 = -1;
         for (uint32_t y = 0; y < bh; ++y)
             for (uint32_t x = 0; x < bw; ++x)
@@ -1173,6 +1185,16 @@ struct Converter {
         out.ok = true;
         out.hash = h;
         return out;
+    }
+
+    // Backdrop-blur (glass) bake: real frosted backdrop frozen into the
+    // texture (see apps/glass_bake.h). Falls back to the plain bake on failure.
+    Baked bakeGlass(Node& n, float radius) {
+        std::vector<uint32_t> buf;
+        uint32_t bw = 0, bh = 0;
+        if (!figoglass::bakeGlassPixels(*ui, n, radius, curW, curH, superScale, buf, bw, bh))
+            return Baked{};
+        return packSprite(buf, bw, bh, n, superScale);
     }
 
     void writeSpriteMeta(const Sprite& sp) {
@@ -1955,7 +1977,13 @@ struct Converter {
         const bool isContainer = !n.children.empty();
         if (!isContainer && needsBake(n)) {
             Baked b;
-            if (nineCandidate(n)) b = bake(n, 1, false, true, true);
+            // Glass panels bake their real (blurred) backdrop in — except
+            // inside a component prefab, whose instances sit over different
+            // backdrops.
+            if (!inComponent) {
+                if (const float r = backdropBlurRadius(n); r > 0) b = bakeGlass(n, r);
+            }
+            if (!b.ok && nineCandidate(n)) b = bake(n, 1, false, true, true);
             if (!b.ok) b = bake(n, superScale);
             if (b.ok) return emitBakedLeaf(b);
             addOpacity();
@@ -2002,7 +2030,13 @@ struct Converter {
             // Complex background: baked sprite on the node itself (sliced) or a
             // sized __bg child (fixed, may overhang via glow).
             Baked b;
-            if (nineCandidate(n)) b = bake(n, 1, false, true, true);
+            // Glass panels bake their real (blurred) backdrop in — except
+            // inside a component prefab, whose instances sit over different
+            // backdrops.
+            if (!inComponent) {
+                if (const float r = backdropBlurRadius(n); r > 0) b = bakeGlass(n, r);
+            }
+            if (!b.ok && nineCandidate(n)) b = bake(n, 1, false, true, true);
             if (!b.ok) b = bake(n, superScale);
             if (b.ok) {
                 const Sprite& sp = sprites[b.hash];
@@ -2506,6 +2540,18 @@ int main(int argc, char** argv) {
     if (frames.empty()) {
         std::fprintf(stderr, "FAIL: no top-level frames\n");
         return 1;
+    }
+
+    // Duplicate frame names (a "Body" per page) make selectFrame() render the
+    // FIRST match for every one of them — later frames then bake against the
+    // first frame's transforms. Make top-level names unique before any
+    // selectFrame.
+    {
+        std::map<std::string, int> seenFrameNames;
+        for (Node* f : frames) {
+            int& k = ++seenFrameNames[f->name];
+            if (k > 1) f->name += " " + std::to_string(k);
+        }
     }
 
     Converter cv;

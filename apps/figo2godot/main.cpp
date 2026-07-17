@@ -43,7 +43,10 @@ using nlohmann::json;
 
 // PNG encoding is shared across the three exporters (Paeth + real deflate).
 #include "../exporter_png.h"
+// Backdrop-blur (glass) background bake, shared across the three exporters.
+#include "../glass_bake.h"
 using figopng::writePng;
+using figoglass::backdropBlurRadius;
 
 // ===================== helpers ==============================================
 
@@ -719,6 +722,16 @@ struct Converter {
         std::vector<Node*> one{clone.get()};
         if (!ui->renderer().renderOverlay(one, 0.0f, buf, bw, bh)) return out;
 
+        return packSprite(buf, bw, bh, n, scale, tryNine, nineOnly);
+    }
+
+    // bake()'s tail, shared with bakeGlass(): crop the painted bbox out of a
+    // frame-sized buffer, dedup by content hash, write the PNG, and return
+    // logical frame-absolute coords.
+    Baked packSprite(std::vector<uint32_t>& buf, uint32_t bw, uint32_t bh, const Node& n,
+                     int scale, bool tryNine = false, bool nineOnly = false) {
+        Baked out;
+
         // Tight bounding box of painted (alpha > 0) pixels.
         int x0 = bw, y0 = bh, x1 = -1, y1 = -1;
         for (uint32_t y = 0; y < bh; ++y) {
@@ -795,6 +808,16 @@ struct Converter {
         out.ok = true;
         out.hash = h;
         return out;
+    }
+
+    // Backdrop-blur (glass) bake: real frosted backdrop frozen into the
+    // texture (see apps/glass_bake.h). Falls back to the plain bake on failure.
+    Baked bakeGlass(Node& n, float radius) {
+        std::vector<uint32_t> buf;
+        uint32_t bw = 0, bh = 0;
+        if (!figoglass::bakeGlassPixels(*ui, n, radius, curW, curH, superScale, buf, bw, bh))
+            return Baked{};
+        return packSprite(buf, bw, bh, n, superScale);
     }
 
     // Rounded-clip mask for containers whose children MOVE (position anim):
@@ -1420,7 +1443,10 @@ struct Converter {
             // 9-slice candidates: bake at 1x first (crisp corners, no downsample
             // blur) and keep only if it's truly a 9-slice; otherwise full 2x bake.
             Baked b;
-            if (nineCandidate(n)) b = bake(n, 1, /*flatten=*/false, /*tryNine=*/true, /*nineOnly=*/true);
+            if (!inComponent) {
+                if (const float r = backdropBlurRadius(n); r > 0) b = bakeGlass(n, r);
+            }
+            if (!b.ok && nineCandidate(n)) b = bake(n, 1, /*flatten=*/false, /*tryNine=*/true, /*nineOnly=*/true);
             if (!b.ok) b = bake(n, superScale);
             if (b.ok) {
                 std::string id = useTexture(b.hash);
@@ -1498,7 +1524,12 @@ struct Converter {
     // Baked background for a container with a complex fill/stroke/corners.
     void emitBg(Node& n, const std::string& parentAttr, json& nodeJson) {
         Baked b;
-        if (nineCandidate(n)) b = bake(n, 1, /*flatten=*/false, /*tryNine=*/true, /*nineOnly=*/true);
+        // Glass panels bake their real (blurred) backdrop in — except inside a
+        // component scene, whose instances sit over different backdrops.
+        if (!inComponent) {
+            if (const float r = backdropBlurRadius(n); r > 0) b = bakeGlass(n, r);
+        }
+        if (!b.ok && nineCandidate(n)) b = bake(n, 1, /*flatten=*/false, /*tryNine=*/true, /*nineOnly=*/true);
         if (!b.ok) b = bake(n, superScale);
         if (!b.ok) return;
         std::string id = useTexture(b.hash);
@@ -1930,6 +1961,18 @@ int main(int argc, char** argv) {
     if (frames.empty()) {
         std::fprintf(stderr, "FAIL: no top-level frames\n");
         return 1;
+    }
+
+    // Duplicate frame names (a "Body" per page) make selectFrame() render the
+    // FIRST match for every one of them — later frames then bake against the
+    // first frame's transforms (arrows land at their parent's origin). Make
+    // top-level names unique before any selectFrame.
+    {
+        std::map<std::string, int> seenFrameNames;
+        for (Node* f : frames) {
+            int& k = ++seenFrameNames[f->name];
+            if (k > 1) f->name += " " + std::to_string(k);
+        }
     }
 
     Converter cv;
