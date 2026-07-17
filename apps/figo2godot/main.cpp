@@ -1075,6 +1075,14 @@ struct Converter {
         const float lineH = n.textStyle.lineHeightPx > 0 ? n.textStyle.lineHeightPx
                                                          : n.textStyle.fontSize * 1.3f;
         const bool multiline = !truncate && lineH > 0 && n.height > lineH * 1.8f;
+        // Hard line breaks in the characters already reproduce the authored
+        // wrap. Re-wrapping them under a wider engine/fallback font adds a
+        // phantom line that overflows the box and overlaps the neighbors
+        // below, so only autowrap when the box has room BEYOND the hard lines.
+        const auto hardBreaks =
+            std::count(n.characters.begin(), n.characters.end(), '\n');
+        const bool softWrap =
+            multiline && n.height > lineH * (static_cast<float>(hardBreaks) + 1.8f);
         // Vertical alignment. Figma's text box is sized tight to the glyphs, so a
         // single-line label (icon-as-emoji, button caption…) must center in its
         // box — Godot's default is TOP, which makes short text hug the top and
@@ -1089,7 +1097,7 @@ struct Converter {
             default: va = multiline ? 0 : 1; break;
         }
         if (va) body += "vertical_alignment = " + std::to_string(va) + "\n";
-        if (multiline) body += "autowrap_mode = 3\n";        // WORD_SMART
+        if (softWrap) body += "autowrap_mode = 3\n";        // WORD_SMART
         if (truncate) body += "text_overrun_behavior = 3\n";  // single-line ellipsis
     }
 

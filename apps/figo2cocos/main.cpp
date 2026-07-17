@@ -1205,14 +1205,19 @@ struct Converter {
         //   WIDTH_AND_HEIGHT (hug both) -> NONE          (node == text)
         //   HEIGHT (fixed width, grow)  -> RESIZE_HEIGHT (keep width, wrap+grow)
         //   NONE / TRUNCATE (fixed box) -> CLAMP         (keep box, align, clip)
-        const bool multiline = lineH > 0 && n.height > lineH * 1.8f;
+        // 硬换行已复现设计稿的折行——引擎字体偏宽时再叠加自动换行会多出一行
+        // 压到下方邻居,所以仅当盒子高度超出硬换行行数才开 wrap。
+        const auto hardBreaks =
+            std::count(n.characters.begin(), n.characters.end(), '\n');
+        const bool softWrap = lineH > 0 &&
+            n.height > lineH * (static_cast<float>(hardBreaks) + 1.8f);
         const std::string& ar = n.textStyle.autoResize;
         int overflow;
         bool wrap;
         if (ar == "WIDTH_AND_HEIGHT") { overflow = 0; wrap = false; }
         else if (ar == "HEIGHT")      { overflow = 3; wrap = true; }
         else if (labelHugs(n))        { overflow = 0; wrap = false; }  // 单行:贴字防截断
-        else                          { overflow = 1; wrap = multiline; }
+        else                          { overflow = 1; wrap = softWrap; }
         c["_enableWrapText"] = wrap;
         // Bundled real font (--fonts): reference the cc.TTFFont asset; weight/
         // slant baked into the matched file aren't synthesized again below.

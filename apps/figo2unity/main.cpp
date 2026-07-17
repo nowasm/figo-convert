@@ -1756,12 +1756,19 @@ struct Converter {
         //                                    a hair taller than the authored box.
         const float lineH = n.textStyle.lineHeightPx > 0 ? n.textStyle.lineHeightPx
                                                          : n.textStyle.fontSize * 1.2f;
-        const bool multiline = lineH > 0 && n.height > lineH * 1.8f;
+        // Hard line breaks already reproduce the authored wrap — re-wrapping
+        // them under a wider engine font adds a phantom line that gets clipped
+        // or overlaps the neighbors below, so only enable wrapping when the
+        // box has room BEYOND the hard lines.
+        const auto hardBreaks =
+            std::count(n.characters.begin(), n.characters.end(), '\n');
+        const bool softWrap = lineH > 0 &&
+            n.height > lineH * (static_cast<float>(hardBreaks) + 1.8f);
         const std::string& ar = n.textStyle.autoResize;
         int hOverflow, vOverflow;
         if (ar == "WIDTH_AND_HEIGHT") { hOverflow = 1; vOverflow = 1; }
         else if (ar == "HEIGHT")      { hOverflow = 0; vOverflow = 1; }
-        else if (multiline)           { hOverflow = 0; vOverflow = 0; }
+        else if (softWrap)            { hOverflow = 0; vOverflow = 0; }
         else                          { hOverflow = 1; vOverflow = 1; }
 
         // With a bundled file the weight/slant are baked into the font itself 鈥?        // only synthesize what the matched file lacks (avoids double-bolding).
@@ -1817,12 +1824,16 @@ struct Converter {
         // could blank the line when the box is a hair shorter than the font).
         const float lineH = n.textStyle.lineHeightPx > 0 ? n.textStyle.lineHeightPx
                                                          : n.textStyle.fontSize * 1.2f;
-        const bool multiline = lineH > 0 && n.height > lineH * 1.8f;
+        // See emitText: hard line breaks already carry the authored wrap.
+        const auto hardBreaks =
+            std::count(n.characters.begin(), n.characters.end(), '\n');
+        const bool softWrap = lineH > 0 &&
+            n.height > lineH * (static_cast<float>(hardBreaks) + 1.8f);
         const std::string& ar = n.textStyle.autoResize;
         int wrap, overflow;  // overflow: TextOverflowModes Overflow=0 Ellipsis=1
         if (ar == "WIDTH_AND_HEIGHT") { wrap = 0; overflow = 0; }
         else if (ar == "HEIGHT")      { wrap = 1; overflow = 0; }
-        else if (multiline)           { wrap = 1; overflow = 1; }
+        else if (softWrap)            { wrap = 1; overflow = 1; }
         else                          { wrap = 0; overflow = 0; }
 
         int fontStyle = 0;  // FontStyles: Bold=1 Italic=2 (synthesized by TMP)
