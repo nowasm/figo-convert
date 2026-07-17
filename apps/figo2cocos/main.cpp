@@ -991,12 +991,35 @@ struct Converter {
         clone->runtimeVisible = -1;
         clone->relativeTransform = n.absoluteTransform;
 
+        // A node fully OUTSIDE the frame (an off-screen list item — its row
+        // overflows the page) would bake to an empty buffer. Rebase it into
+        // the buffer with headroom for effect bleed and shift the returned
+        // coords back, so off-frame content keeps its sprites (the engine's
+        // clip hides it exactly like Figma does).
+        float rebaseX = 0.0f, rebaseY = 0.0f;
+        {
+            const float ax = n.absoluteTransform.m02, ay = n.absoluteTransform.m12;
+            if (ax >= (float)curW || ay >= (float)curH || ax + n.width <= 0.0f ||
+                ay + n.height <= 0.0f) {
+                const float pad = 64.0f;
+                rebaseX = pad - ax;
+                rebaseY = pad - ay;
+                clone->relativeTransform.m02 += rebaseX;
+                clone->relativeTransform.m12 += rebaseY;
+            }
+        }
+
         std::vector<uint32_t> buf;
         uint32_t bw = 0, bh = 0;
         std::vector<Node*> one{clone.get()};
         if (!ui->renderer().renderOverlay(one, 0.0f, buf, bw, bh)) return out;
 
-        return packSprite(buf, bw, bh, n, scale, tryNine, nineOnly);
+        out = packSprite(buf, bw, bh, n, scale, tryNine, nineOnly);
+        if (out.ok) {
+            out.x -= rebaseX;
+            out.y -= rebaseY;
+        }
+        return out;
     }
 
     // bake()'s tail, shared with bakeGlass(): crop the painted bbox out of a

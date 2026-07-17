@@ -80,6 +80,15 @@ inline bool bakeGlassPixels(figo::FigmaUI& ui, figo::Node& n, float radius, uint
                             uint32_t curH, int scale, std::vector<uint32_t>& buf,
                             uint32_t& bw, uint32_t& bh) {
     using figo::Node;
+    // A node fully outside the frame has no backdrop to sample (and its render
+    // passes would be empty) — let the caller fall back to the plain bake,
+    // which rebases off-frame nodes into the buffer.
+    {
+        const float ax = n.absoluteTransform.m02, ay = n.absoluteTransform.m12;
+        if (ax >= static_cast<float>(curW) || ay >= static_cast<float>(curH) ||
+            ax + n.width <= 0.0f || ay + n.height <= 0.0f)
+            return false;
+    }
     Node* root = &n;
     while (root->parent) root = root->parent;
     // Child-index path root → n, to find n inside the clone.
