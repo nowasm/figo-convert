@@ -2,7 +2,7 @@
 
 Turn a **Figma design (.fig)** or a **figo canvas.json** into ready-to-use
 **UGUI prefabs** (.prefab + textures + fonts), entirely inside the Editor.
-Windows Editor only in this version.
+Windows and macOS Editors are supported.
 
 ## Convert your first design
 
@@ -39,10 +39,11 @@ You can also right-click a `.fig` / `.json` asset in the Project view →
 
 ## Requirements & notes
 
-- Windows Editor, Unity 2022.3 or newer. The project needs `com.unity.ugui`
-  (present in any UI project).
-- Conversion runs a bundled command-line converter
-  (`Editor/Bin/figo2unity.exe`) — no network access, everything is local.
+- Windows or macOS Editor, Unity 2022.3 or newer. The project needs
+  `com.unity.ugui` (present in any UI project).
+- Conversion runs a bundled command-line converter (`Editor/Bin/figo2unity.exe`
+  on Windows, `Editor/Bin/figo2unity` on macOS) — no network access,
+  everything is local.
 - Supported design features: solid/gradient/image fills, strokes, per-corner
   radii, masks, blend modes, shadows/blurs, auto-layout and constraints,
   component instances with overrides, multi-line rich text.

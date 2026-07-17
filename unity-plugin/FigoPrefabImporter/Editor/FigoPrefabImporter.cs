@@ -147,7 +147,7 @@ namespace Figo.PrefabImporter
             if (exe == null)
             {
                 EditorUtility.DisplayDialog("Figo Prefab Importer",
-                    "figo2unity.exe not found next to the importer scripts (Editor/Bin/). Reimport the package.", "OK");
+                    "The " + ConverterFileName() + " converter was not found next to the importer scripts (Editor/Bin/). Reimport the package.", "OK");
                 return;
             }
             if (!outputFolder.Replace('\\', '/').StartsWith("Assets/"))
@@ -220,16 +220,49 @@ namespace Figo.PrefabImporter
             if (folderAsset != null) EditorGUIUtility.PingObject(folderAsset);
         }
 
-        // The exe ships as a regular asset in Editor/Bin next to this script;
-        // locate it relative to the script so the package folder can be moved.
+        // Per-platform converter binary bundled in Editor/Bin (Windows .exe,
+        // macOS mach-o with no extension).
+        static string ConverterFileName()
+        {
+            return Application.platform == RuntimePlatform.OSXEditor
+                ? "figo2unity" : "figo2unity.exe";
+        }
+
+        // The converter ships as a regular asset in Editor/Bin next to this
+        // script; locate it relative to the script so the package folder can
+        // be moved.
         static string FindConverter()
         {
             var guids = AssetDatabase.FindAssets("FigoPrefabImporter t:MonoScript");
             foreach (var g in guids)
             {
                 var scriptPath = AssetDatabase.GUIDToAssetPath(g);
-                var candidate = Path.Combine(Path.GetDirectoryName(scriptPath) ?? "", "Bin", "figo2unity.exe");
-                if (File.Exists(candidate)) return Path.GetFullPath(candidate);
+                var candidate = Path.Combine(Path.GetDirectoryName(scriptPath) ?? "", "Bin", ConverterFileName());
+                if (!File.Exists(candidate)) continue;
+                var full = Path.GetFullPath(candidate);
+                // .unitypackage import does not preserve the executable bit —
+                // restore it before launching (no-op when already set).
+                if (Application.platform == RuntimePlatform.OSXEditor)
+                {
+                    try
+                    {
+                        using (var chmod = Process.Start(new ProcessStartInfo
+                        {
+                            FileName = "/bin/chmod",
+                            Arguments = "+x " + Quote(full),
+                            UseShellExecute = false,
+                            CreateNoWindow = true,
+                        }))
+                        {
+                            chmod.WaitForExit();
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogWarning("[Figo] chmod +x failed: " + e.Message);
+                    }
+                }
+                return full;
             }
             return null;
         }
