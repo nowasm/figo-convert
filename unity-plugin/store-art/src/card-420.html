@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<style>
+  body { width: 420px; height: 280px; position: relative; }
+  .wrap { position: absolute; inset: 0; padding: 26px 28px; display: flex; flex-direction: column; }
+  .top { display: flex; align-items: center; gap: 14px; }
+  .top img { width: 58px; height: 58px; }
+  .name { font-size: 25px; font-weight: 800; letter-spacing: -.02em; line-height: 1.1; }
+  .name small { display: block; font-size: 12.5px; font-weight: 600; color: var(--dim); letter-spacing: .14em; text-transform: uppercase; margin-bottom: 3px; }
+  .tag { margin-top: 16px; font-size: 15.5px; line-height: 1.45; color: #C7D3EC; }
+  .tag b { color: var(--paper); }
+  .flow { margin-top: auto; display: flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 700; }
+  .flow .chip { padding: 5px 12px; }
+  .flow .arrow { color: var(--blue); font-size: 15px; }
+  .flow .out { border-color: rgba(112,71,235,.6); background: rgba(112,71,235,.16); }
+  .bar { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: var(--grad); }
+</style></head>
+<body>
+  <div class="bg"></div>
+  <div class="grid"></div>
+  <div class="wrap">
+    <div class="top">
+      <img src="assets/figo-mark.svg">
+      <div class="name"><small>figo</small>Prefab Importer</div>
+    </div>
+    <div class="tag">Turn <b>Figma &amp; HTML designs</b> into <b>pixel-identical UGUI prefabs</b> — baked sprites, .meta files, one click.</div>
+    <div class="flow">
+      <span class="chip mono">.fig</span>
+      <span class="arrow">→</span>
+      <span class="chip mono out">.prefab</span>
+      <span class="arrow">+</span>
+      <span class="chip mono out">textures/</span>
+    </div>
+  </div>
+  <div class="bar"></div>
+</body></html>

@@ -1,0 +1,64 @@
+/* figo brand base for store art — see figo/branding/README.md */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --mint: #23CDB8;
+  --blue: #4B7CFF;
+  --violet: #7047EB;
+  --night: #0D1424;
+  --night-2: #111B30;
+  --ink: #111827;
+  --paper: #F4F7FF;
+  --dim: #8FA0C2;
+  --grad: linear-gradient(135deg, #23CDB8 0%, #4B7CFF 52%, #7047EB 100%);
+}
+html, body { width: 100%; height: 100%; overflow: hidden; }
+body {
+  background: var(--night);
+  color: var(--paper);
+  font-family: -apple-system, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.mono { font-family: "SF Mono", Menlo, monospace; }
+.grad-text {
+  background: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+/* soft radial glows used on every canvas */
+.bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(60% 80% at 82% 18%, rgba(112, 71, 235, .22), transparent 60%),
+    radial-gradient(55% 70% at 12% 88%, rgba(35, 205, 184, .14), transparent 60%),
+    radial-gradient(70% 90% at 50% 50%, rgba(75, 124, 255, .10), transparent 65%),
+    var(--night);
+}
+.grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(143, 160, 194, .06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(143, 160, 194, .06) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(75% 75% at 50% 40%, #000 30%, transparent 100%);
+  -webkit-mask-image: radial-gradient(75% 75% at 50% 40%, #000 30%, transparent 100%);
+}
+.chip {
+  display: inline-flex; align-items: center; gap: .45em;
+  border: 1px solid rgba(143, 160, 194, .35);
+  background: rgba(17, 27, 48, .75);
+  border-radius: 999px;
+  color: var(--paper);
+}
+.card {
+  background: rgba(17, 27, 48, .82);
+  border: 1px solid rgba(143, 160, 194, .22);
+  border-radius: 18px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .45);
+}
+.shot { border-radius: 14px; display: block; }
+.shot-frame {
+  border-radius: 18px; overflow: hidden;
+  border: 1px solid rgba(143, 160, 194, .28);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, .55);
+}

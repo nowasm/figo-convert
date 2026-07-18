@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<style>
+  body { width: 2400px; height: 1600px; position: relative; }
+  .grid { background-size: 80px 80px; }
+  .wrap { position: absolute; inset: 0; padding: 0 150px; display: flex; flex-direction: column; justify-content: center; }
+  .kicker { font-size: 30px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--mint); }
+  h1 { margin-top: 22px; font-size: 92px; font-weight: 800; letter-spacing: -.02em; }
+  .cols { margin-top: 90px; display: flex; gap: 90px; align-items: flex-start; }
+  .left { width: 900px; flex: none; }
+  .step { display: flex; gap: 30px; align-items: flex-start; margin-bottom: 58px; }
+  .num { width: 66px; height: 66px; flex: none; border-radius: 18px; background: var(--grad);
+    display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 800; color: #fff; }
+  .step h3 { font-size: 38px; font-weight: 750; margin-bottom: 10px; }
+  .step p { font-size: 27px; line-height: 1.5; color: #C7D3EC; }
+  .step .mono { color: var(--mint); font-size: 25px; }
+  .term { margin-top: 8px; border-radius: 18px; background: #0A101F; border: 1px solid rgba(143,160,194,.25);
+    padding: 34px 40px; font-size: 25px; line-height: 1.75; box-shadow: 0 24px 70px rgba(0,0,0,.45); }
+  .term .dots { display: flex; gap: 10px; margin-bottom: 22px; }
+  .term .dots i { width: 16px; height: 16px; border-radius: 50%; background: #2A3654; }
+  .term .c-dim { color: #66759A; }
+  .term .c-ok { color: var(--mint); font-weight: 700; }
+  .right { flex: 1; position: relative; }
+  .shot { width: 100%; }
+  .caption { margin-top: 26px; text-align: center; font-size: 25px; color: var(--dim); }
+</style></head>
+<body>
+  <div class="bg"></div>
+  <div class="grid"></div>
+  <div class="wrap">
+    <div class="kicker">How it works</div>
+    <h1>One click from design to <span class="grad-text">prefab</span></h1>
+    <div class="cols">
+      <div class="left">
+        <div class="step"><div class="num">1</div><div>
+          <h3>Pick a design</h3>
+          <p>A Figma <span class="mono">.fig</span> (File → Save local copy…), a figo <span class="mono">canvas.json</span>, or Figma REST JSON — no plugins, no API keys.</p>
+        </div></div>
+        <div class="step"><div class="num">2</div><div>
+          <h3>Convert</h3>
+          <p><span class="mono">Tools → Figo Prefab Importer…</span> or right-click the asset → <span class="mono">Figo → Convert to UGUI Prefabs</span>.</p>
+        </div></div>
+        <div class="step"><div class="num">3</div><div>
+          <h3>Drop into your scene</h3>
+          <p>UGUI prefabs with baked sprites and .meta files, imported straight into <span class="mono">Assets/</span>.</p>
+        </div></div>
+        <div class="term mono">
+          <div class="dots"><i></i><i></i><i></i></div>
+          <div class="c-dim">$ figo2unity starfall_menu.canvas.json Assets/FigoImported</div>
+          <div>loading starfall_menu.canvas.json</div>
+          <div>&nbsp;&nbsp;menu&nbsp;&nbsp;&nbsp;&nbsp; → menu.prefab&nbsp;&nbsp;&nbsp;&nbsp; (186 objects)</div>
+          <div>&nbsp;&nbsp;settings → settings.prefab (219 objects)</div>
+          <div class="c-ok">RESULT: OK, 2 prefab(s), 33 unique sprite(s)</div>
+        </div>
+      </div>
+      <div class="right">
+        <div class="shot-frame"><img class="shot" src="assets/starfall_menu.web.png"></div>
+        <div class="caption">Sample included: “Starfall Arena” menu + settings — converts in seconds</div>
+      </div>
+    </div>
+  </div>
+</body></html>

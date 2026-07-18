@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<style>
+  body { width: 160px; height: 160px; position: relative; }
+  .bg { background:
+    radial-gradient(120% 120% at 20% 10%, rgba(35,205,184,.20), transparent 55%),
+    radial-gradient(130% 130% at 85% 90%, rgba(112,71,235,.30), transparent 60%),
+    var(--night); }
+  .ring { position: absolute; inset: 6px; border-radius: 28px;
+    border: 2px solid transparent;
+    background: linear-gradient(var(--night), var(--night)) padding-box,
+                linear-gradient(135deg, rgba(35,205,184,.55), rgba(75,124,255,.45), rgba(112,71,235,.55)) border-box;
+    opacity: .8; }
+  .mark { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+  .mark img { width: 112px; height: 112px; filter: drop-shadow(0 6px 22px rgba(75,124,255,.35)); }
+</style></head>
+<body>
+  <div class="bg"></div>
+  <div class="ring"></div>
+  <div class="mark"><img src="assets/figo-mark.svg"></div>
+</body></html>

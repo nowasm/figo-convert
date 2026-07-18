@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<style>
+  body { width: 2400px; height: 1600px; position: relative; }
+  .grid { background-size: 80px 80px; }
+  .wrap { position: absolute; inset: 0; padding: 130px 150px; }
+  .kicker { font-size: 30px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--mint); }
+  h1 { margin-top: 22px; font-size: 88px; font-weight: 800; letter-spacing: -.02em; }
+  .sub { margin-top: 26px; font-size: 31px; color: #C7D3EC; max-width: 1500px; line-height: 1.5; }
+  .sub b { color: var(--paper); }
+  .atlas { margin-top: 80px; display: grid; grid-template-columns: repeat(6, 1fr); gap: 34px; }
+  .cell { background: rgba(17,27,48,.85); border: 1px solid rgba(143,160,194,.22); border-radius: 18px;
+    padding: 26px; height: 260px; display: flex; flex-direction: column; }
+  .cell .imgbox { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 0;
+    background:
+      linear-gradient(45deg, rgba(170,190,230,.16) 25%, transparent 25%, transparent 75%, rgba(170,190,230,.16) 75%),
+      linear-gradient(45deg, rgba(170,190,230,.16) 25%, transparent 25%, transparent 75%, rgba(170,190,230,.16) 75%),
+      #1A2440;
+    background-size: 28px 28px, 28px 28px, auto; background-position: 0 0, 14px 14px, 0 0; border-radius: 10px; }
+  .cell img { max-width: 88%; max-height: 82%; object-fit: contain; }
+  .cell .fn { margin-top: 16px; font-size: 17.5px; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .strip { margin-top: 76px; display: flex; gap: 40px; }
+  .fact { flex: 1; background: rgba(17,27,48,.85); border: 1px solid rgba(143,160,194,.22);
+    border-radius: 18px; padding: 40px 46px; }
+  .fact h3 { font-size: 32px; font-weight: 750; margin-bottom: 14px; }
+  .fact h3 span { color: var(--mint); }
+  .fact p { font-size: 24.5px; line-height: 1.5; color: #AFC0DF; }
+</style></head>
+<body>
+  <div class="bg"></div>
+  <div class="grid"></div>
+  <div class="wrap">
+    <div class="kicker">Real output — Starfall sample</div>
+    <h1>Sprites baked <span class="grad-text">exactly as rendered</span></h1>
+    <div class="sub">Every visual is rasterized by the same renderer that draws the design — gradients, glows and text land in Unity <b>byte-for-byte deduplicated</b>, with sprite .meta files generated for you.</div>
+    <div class="atlas">
+      <div class="cell"><div class="imgbox"><img src="assets/tex_logo-title_914700ec.png"></div><div class="fn mono">logo-title_914700ec.png</div></div>
+      <div class="cell"><div class="imgbox"><img src="assets/tex_menu-btn_0dc58cc8.png"></div><div class="fn mono">menu-btn_0dc58cc8.png</div></div>
+      <div class="cell"><div class="imgbox"><img src="assets/tex_season-fill_2ed9a5ac.png"></div><div class="fn mono">season-fill_2ed9a5ac.png</div></div>
+      <div class="cell"><div class="imgbox"><img src="assets/tex_avatar_aae462fc.png"></div><div class="fn mono">avatar_aae462fc.png</div></div>
+      <div class="cell"><div class="imgbox"><img src="assets/tex_level-badge_0bd14dd3.png"></div><div class="fn mono">level-badge_0bd14dd3.png</div></div>
+      <div class="cell"><div class="imgbox"><img src="assets/tex_coin_c812dfed.png"></div><div class="fn mono">coin_c812dfed.png</div></div>
+      <div class="cell"><div class="imgbox"><img src="assets/tex_menu-btn_22cdcf6c.png"></div><div class="fn mono">menu-btn_22cdcf6c.png</div></div>
+      <div class="cell"><div class="imgbox"><img src="assets/tex_gem_315b4976.png"></div><div class="fn mono">gem_315b4976.png</div></div>
+      <div class="cell"><div class="imgbox"><img src="assets/tex_bottom-bar_635bcf39.png"></div><div class="fn mono">bottom-bar_635bcf39.png</div></div>
+      <div class="cell"><div class="imgbox"><img src="assets/tex_seg_7f04ec8b.png"></div><div class="fn mono">seg_7f04ec8b.png</div></div>
+      <div class="cell"><div class="imgbox"><img src="assets/tex_menu-btn_679eb47c.png"></div><div class="fn mono">menu-btn_679eb47c.png</div></div>
+      <div class="cell"><div class="imgbox"><img src="assets/tex_apply-btn_7473dcae.png"></div><div class="fn mono">apply-btn_7473dcae.png</div></div>
+    </div>
+    <div class="strip">
+      <div class="fact"><h3><span>Content-derived</span> GUIDs &amp; fileIDs</h3><p>Re-running a conversion produces identical files — version control diffs stay clean, references never break.</p></div>
+      <div class="fact"><h3><span>Deduplicated</span> textures</h3><p>Identical sprites across frames are baked once and shared — the Starfall sample: 405 objects, just 33 unique sprites.</p></div>
+      <div class="fact"><h3><span>Crisp text</span> out of the box</h3><p>A bundled FigoText material and shader keep converted text sharp inside UGUI.</p></div>
+    </div>
+  </div>
+</body></html>

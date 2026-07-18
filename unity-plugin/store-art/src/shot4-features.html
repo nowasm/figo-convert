@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<style>
+  body { width: 2400px; height: 1600px; position: relative; }
+  .grid { background-size: 80px 80px; }
+  .wrap { position: absolute; inset: 0; padding: 130px 150px; }
+  .kicker { font-size: 30px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--mint); }
+  h1 { margin-top: 22px; font-size: 88px; font-weight: 800; letter-spacing: -.02em; }
+  .cards { margin-top: 90px; display: grid; grid-template-columns: 1fr 1fr; gap: 44px; }
+  .f { background: rgba(17,27,48,.85); border: 1px solid rgba(143,160,194,.22); border-radius: 22px; padding: 52px 56px; }
+  .f .ic { width: 84px; height: 84px; border-radius: 22px; background: var(--grad); margin-bottom: 34px;
+    display: flex; align-items: center; justify-content: center; font-size: 40px; }
+  .f h3 { font-size: 38px; font-weight: 750; margin-bottom: 16px; }
+  .f p { font-size: 27px; line-height: 1.55; color: #AFC0DF; }
+  .f p .mono { color: var(--mint); font-size: 24px; }
+  .foot { margin-top: 78px; display: flex; align-items: center; justify-content: space-between; }
+  .foot .brand { display: flex; align-items: center; gap: 18px; }
+  .foot .brand img { width: 64px; height: 64px; }
+  .foot .brand b { font-size: 30px; }
+  .foot .brand span { color: var(--dim); font-size: 30px; }
+  .plat { display: flex; gap: 16px; }
+  .plat .chip { padding: 14px 28px; font-size: 24px; font-weight: 700; }
+</style></head>
+<body>
+  <div class="bg"></div>
+  <div class="grid"></div>
+  <div class="wrap">
+    <div class="kicker">Why teams pick it</div>
+    <h1>Built for <span class="grad-text">real production</span></h1>
+    <div class="cards">
+      <div class="f"><div class="ic">🎨</div><h3>Gamma &amp; Linear, handled</h3>
+        <p>Reads your project’s color space from PlayerSettings and pre-compensates translucent alpha in Linear — what designers approved is what players see.</p></div>
+      <div class="f"><div class="ic">📦</div><h3>Self-contained converters</h3>
+        <p>Native <span class="mono">figo2unity</span> binaries for Windows x64 and macOS (universal: Apple Silicon + Intel) ship inside the package — .fig parsing built in, nothing to install.</p></div>
+      <div class="f"><div class="ic">🧩</div><h3>Components &amp; frames</h3>
+        <p>Optional component extraction turns repeated design elements into shared prefabs; frame filter exports exactly the screens you need, at any scale.</p></div>
+      <div class="f"><div class="ic">⚡</div><h3>CI-friendly CLI</h3>
+        <p>The same converter runs headless — wire <span class="mono">figo2unity design.fig out/</span> into your build pipeline and keep UI assets always in sync.</p></div>
+    </div>
+    <div class="foot">
+      <div class="brand"><img src="assets/figo-mark.svg"><b>figo</b><span>· Prefab Importer</span></div>
+      <div class="plat">
+        <span class="chip">Unity 2022.3 LTS+</span>
+        <span class="chip">Windows x64</span>
+        <span class="chip">macOS Universal</span>
+        <span class="chip">Sample included</span>
+      </div>
+    </div>
+  </div>
+</body></html>

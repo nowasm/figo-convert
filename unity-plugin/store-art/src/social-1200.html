@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<style>
+  body { width: 1200px; height: 630px; position: relative; }
+  .wrap { position: absolute; inset: 0; padding: 64px 70px; display: flex; align-items: center; gap: 56px; }
+  .left { width: 480px; flex: none; }
+  .brandrow { display: flex; align-items: center; gap: 14px; margin-bottom: 26px; }
+  .brandrow img { width: 58px; height: 58px; }
+  .brandrow span { font-size: 21px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--dim); }
+  h1 { font-size: 52px; font-weight: 800; letter-spacing: -.02em; line-height: 1.05; }
+  .tag { margin-top: 20px; font-size: 20px; line-height: 1.5; color: #C7D3EC; }
+  .tag b { color: var(--paper); }
+  .flow { margin-top: 30px; display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 700; }
+  .flow .chip { padding: 8px 16px; }
+  .flow .arrow { color: var(--blue); font-size: 20px; }
+  .flow .out { border-color: rgba(112,71,235,.6); background: rgba(112,71,235,.16); }
+  .right { flex: 1; }
+  .shot { width: 100%; }
+  .bar { position: absolute; left: 0; right: 0; bottom: 0; height: 6px; background: var(--grad); }
+</style></head>
+<body>
+  <div class="bg"></div>
+  <div class="grid"></div>
+  <div class="wrap">
+    <div class="left">
+      <div class="brandrow"><img src="assets/figo-mark.svg"><span>figo</span></div>
+      <h1>Figma → <span class="grad-text">UGUI prefabs</span></h1>
+      <div class="tag"><b>Pixel-identical</b> conversion inside the Unity Editor — sprites baked, .meta generated, stable GUIDs.</div>
+      <div class="flow">
+        <span class="chip mono">.fig</span>
+        <span class="arrow">→</span>
+        <span class="chip mono out">.prefab</span>
+        <span class="arrow">+</span>
+        <span class="chip mono out">textures/</span>
+      </div>
+    </div>
+    <div class="right"><div class="shot-frame"><img class="shot" src="assets/starfall_menu.web.png"></div></div>
+  </div>
+  <div class="bar"></div>
+</body></html>
