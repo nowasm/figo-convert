@@ -30,7 +30,15 @@ wallet.fig 验证 `RESULT: OK`)。mac 侧实际踩到的坑:
     `-DTHORVG_LIBRARY/-DFIGO_FIG2JSON_LIB` 指到 x86_64 的两个 .a,最后
     `lipo -create build/figo2unity build_x64/figo2unity -output ...`。
     x86_64 侧冒烟直接跑(Rosetta),两 slice 用 `arch -arm64/-x86_64` 各验一遍。
-- 本机无 pwsh,打包(第 6 节)回 Windows 跑,脚本会自动取已提交的 prebuilt。
+- 本机无 pwsh,staging 用 bash 手工镜像了 ps1 逻辑(注意:ps1 会优先取 build/
+  的新鲜构建,但 build/figo2unity 是 lipo 前的单架构产物——**打包 mac 二进制
+  一律取 prebuilt/macos 的 universal 版**)。
+- 第 6/7 步已在 mac 完成(2026-07-18,Unity 2022.3.62f3 batchmode):staged 包
+  → `AssetDatabase.ExportPackage` 出 `.unitypackage`(编译零错误)→ 导入全新
+  工程(此时 figo2unity 确实丢了可执行位)→ 反射驱动 `Convert(false)` 转
+  starfall 样例 → `RESULT: OK, 2 prefab(s), 33 unique sprite(s)`,chmod 修复
+  路径实测生效。e2e 脚手架:scratchpad 的 FigoE2E.cs(反射设 inputPath/
+  outputFolder 后调私有 Convert)。
 
 原始待办(2026-07-17,Windows 侧记录):
 
