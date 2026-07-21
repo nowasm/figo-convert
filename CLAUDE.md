@@ -39,14 +39,19 @@ build\figo2godot.exe examples\html\starfall_menu.canvas.json out_godot
 
 ## Unity 插件（Asset Store 包）
 
-`unity-plugin/FigoPrefabImporter/` 是 Unity 编辑器包源码（薄 C# 胶水：
-Tools → Figo Prefab Importer 窗口 + 右键菜单，调包内 `Editor/Bin/figo2unity.exe`，
-Gamma/Linear 按 PlayerSettings 自动选 `--linear`）。
-`powershell -File tools/pack_unity_plugin.ps1` 把源码 + exe + starfall 样例
-staged 到 `build_unityplugin/`，拷进任意 Unity 工程 Assets/ 即可用/导出。
-**注意 exe 必须是带 fig2json 静态库的自包含构建**（同级 `../fig2json` 先
-`cargo build --release` 再 configure，否则 .fig 输入不可用）。
-已在 Unity 2022.3 batchmode 端到端验证（编译 + 转换 starfall + prefab 断言）。
+源码在 `unity-plugin/unityproj/Assets/FigoPrefabImporter/`（unityproj 是用于
+导出 .unitypackage 的完整 Unity 工程；薄 C# 胶水：Tools → Figo Prefab
+Importer 窗口 + 右键菜单，Gamma/Linear 按 PlayerSettings 自动选 `--linear`）。
+**包内不捆绑转换器二进制**：首次 Convert 时按平台从公开 figo 仓库
+下载（`https://raw.githubusercontent.com/nowasm/figo/master/prebuild/`
+win-x64/figo2unity.exe ~3MB / macos/figo2unity universal ~10MB），缓存在用户
+工程 `Library/FigoPrefabImporter/`；手放 `Editor/Bin/` 的二进制优先（离线用）。
+发布新二进制 = 自包含构建（带 fig2json 静态库，同级 `../fig2json` 先
+`cargo build --release` 再 configure）后提交到 `../figo/prebuild/`。
+`powershell -File tools/pack_unity_plugin.ps1` 把源码 + starfall 样例 staged
+到 `build_unityplugin/`（~1.4MB，无 exe），拷进任意 Unity 工程 Assets/ 即可
+用/导出。已在 Unity 2022.3 batchmode 端到端验证（编译 + 真实 GitHub 下载 +
+转换 starfall + prefab 断言，e2e 脚本 `unityproj/Assets/Editor/FigoE2E.cs`）。
 
 ## 工作流技能
 

@@ -1,0 +1,2468 @@
+{
+  "document": {
+    "type": "DOCUMENT",
+    "children": [
+      {
+        "type": "CANVAS",
+        "name": "Page 1",
+        "children": [
+          {
+            "name": "menu",
+            "type": "FRAME",
+            "transform": {
+              "x": 0,
+              "y": 0
+            },
+            "size": {
+              "x": 1280,
+              "y": 720
+            },
+            "fillPaints": [
+              {
+                "type": "SOLID",
+                "color": "#070b16"
+              }
+            ],
+            "frameMaskDisabled": false,
+            "children": [
+              {
+                "name": "screen",
+                "type": "FRAME",
+                "transform": {
+                  "x": 0,
+                  "y": 0
+                },
+                "size": {
+                  "x": 1280,
+                  "y": 720
+                },
+                "frameMaskDisabled": true,
+                "children": [
+                  {
+                    "name": "space-bg",
+                    "type": "FRAME",
+                    "transform": {
+                      "x": 0,
+                      "y": 0
+                    },
+                    "size": {
+                      "x": 1280,
+                      "y": 720
+                    },
+                    "fillPaints": [
+                      {
+                        "type": "IMAGE",
+                        "image": {
+                          "filename": "images/w2c_0_1.png"
+                        },
+                        "scaleMode": "FILL"
+                      }
+                    ],
+                    "frameMaskDisabled": true
+                  },
+                  {
+                    "name": "slash",
+                    "type": "FRAME",
+                    "transform": {
+                      "x": 381.94,
+                      "y": -15.88
+                    },
+                    "size": {
+                      "x": 896.12,
+                      "y": 401.75
+                    },
+                    "fillPaints": [
+                      {
+                        "type": "IMAGE",
+                        "image": {
+                          "filename": "images/w2c_0_2.png"
+                        },
+                        "scaleMode": "FILL"
+                      }
+                    ],
+                    "frameMaskDisabled": true
+                  },
+                  {
+                    "name": "slash",
+                    "type": "FRAME",
+                    "transform": {
+                      "x": 528.12,
+                      "y": 293.14
+                    },
+                    "size": {
+                      "x": 883.76,
+                      "y": 363.71
+                    },
+                    "fillPaints": [
+                      {
+                        "type": "IMAGE",
+                        "image": {
+                          "filename": "images/w2c_0_3.png"
+                        },
+                        "scaleMode": "FILL"
+                      }
+                    ],
+                    "frameMaskDisabled": true,
+                    "opacity": 0.7
+                  },
+                  {
+                    "name": "logo-block",
+                    "type": "FRAME",
+                    "transform": {
+                      "x": 96,
+                      "y": 92
+                    },
+                    "size": {
+                      "x": 427.53,
+                      "y": 227.91
+                    },
+                    "frameMaskDisabled": true,
+                    "children": [
+                      {
+                        "name": "heading",
+                        "type": "TEXT",
+                        "transform": {
+                          "x": 0,
+                          "y": 0
+                        },
+                        "size": {
+                          "x": 341.94,
+                          "y": 18
+                        },
+                        "textData": {
+                          "characters": "// ORBITAL COMBAT LEAGUE"
+                        },
+                        "fontName": {
+                          "family": "Consolas"
+                        },
+                        "fontSize": 15,
+                        "fontWeight": 400,
+                        "textAlignHorizontal": "LEFT",
+                        "textAutoResize": "NONE",
+                        "fillPaints": [
+                          {
+                            "type": "SOLID",
+                            "color": "#00e5ff"
+                          }
+                        ]
+                      },
+                      {
+                        "name": "logo-title",
+                        "type": "FRAME",
+                        "transform": {
+                          "x": 0,
+                          "y": 28
+                        },
+                        "size": {
+                          "x": 427.53,
+                          "y": 161.91
+                        },
+                        "fillPaints": [
+                          {
+                            "type": "IMAGE",
+                            "image": {
+                              "filename": "images/w2c_0_4.png"
+                            },
+                            "scaleMode": "FILL"
+                          }
+                        ],
+                        "frameMaskDisabled": true
+                      },
+                      {
+                        "name": "labelText",
+                        "type": "TEXT",
+                        "transform": {
+                          "x": 0,
+                          "y": 208.91
+                        },
+                        "size": {
+                          "x": 180.86,
+                          "y": 17
+                        },
+                        "textData": {
+                          "characters": "星陨竞技场 · 赛季 7"
+                        },
+                        "fontName": {
+                          "family": "Bahnschrift"
+                        },
+                        "fontSize": 17,
+                        "fontWeight": 400,
+                        "textAlignHorizontal": "LEFT",
+                        "textAutoResize": "NONE",
+                        "fillPaints": [
+                          {
+                            "type": "SOLID",
+                            "color": "#7d8cab"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "menu-col",
+                    "type": "FRAME",
+                    "transform": {
+                      "x": 96,
+                      "y": 296
+                    },
+                    "size": {
+                      "x": 420,
+                      "y": 304
+                    },
+                    "frameMaskDisabled": true,
+                    "children": [
+                      {
+                        "name": "menu-btn",
+                        "type": "FRAME",
+                        "transform": {
+                          "x": 0,
+                          "y": 0
+                        },
+                        "size": {
+                          "x": 420,
+                          "y": 76
+                        },
+                        "fillPaints": [
+                          {
+                            "type": "IMAGE",
+                            "image": {
+                              "filename": "images/w2c_0_5.png"
+                            },
+                            "scaleMode": "FILL"
+                          }
+                        ],
+                        "frameMaskDisabled": true,
+                        "children": [
+                          {
+                            "name": "labelText",
+                            "type": "TEXT",
+                            "transform": {
+                              "x": 30,
+                              "y": 27
+                            },
+                            "size": {
+                              "x": 120,
+                              "y": 26
+                            },
+                            "textData": {
+                              "characters": "开始匹配"
+                            },
+                            "fontName": {
+                              "family": "Bahnschrift"
+                            },
+                            "fontSize": 26,
+                            "fontWeight": 700,
+                            "textAlignHorizontal": "LEFT",
+                            "textAutoResize": "NONE",
+                            "fillPaints": [
+                              {
+                                "type": "SOLID",
+                                "color": "#e8f1ff"
+                              }
+                            ]
+                          },
+                          {
+                            "name": "labelText",
+                            "type": "TEXT",
+                            "transform": {
+                              "x": 348.41,
+                              "y": 30.5
+                            },
+                            "size": {
+                              "x": 44.59,
+                              "y": 15
+                            },
+                            "textData": {
+                              "characters": "[01]"
+                            },
+                            "fontName": {
+                              "family": "Consolas"
+                            },
+                            "fontSize": 13,
+                            "fontWeight": 700,
+                            "textAlignHorizontal": "LEFT",
+                            "textAutoResize": "NONE",
+                            "fillPaints": [
+                              {
+                                "type": "SOLID",
+                                "color": "#ff2d78"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "name": "menu-btn",
+                        "type": "FRAME",
+                        "transform": {
+                          "x": 0,
+                          "y": 88
+                        },
+                        "size": {
+                          "x": 420,
+                          "y": 60
+                        },
+                        "fillPaints": [
+                          {
+                            "type": "IMAGE",
+                            "image": {
+                              "filename": "images/w2c_0_6.png"
+                            },
+                            "scaleMode": "FILL"
+                          }
+                        ],
+                        "frameMaskDisabled": true,
+                        "children": [
+                          {
+                            "name": "labelText",
+                            "type": "TEXT",
+                            "transform": {
+                              "x": 30,
+                              "y": 21
+                            },
+                            "size": {
+                              "x": 75,
+                              "y": 21
+                            },
+                            "textData": {
+                              "characters": "武器库"
+                            },
+                            "fontName": {
+                              "family": "Bahnschrift"
+                            },
+                            "fontSize": 21,
+                            "fontWeight": 700,
+                            "textAlignHorizontal": "LEFT",
+                            "textAutoResize": "NONE",
+                            "fillPaints": [
+                              {
+                                "type": "SOLID",
+                                "color": "#e8f1ff"
+                              }
+                            ]
+                          },
+                          {
+                            "name": "labelText",
+                            "type": "TEXT",
+                            "transform": {
+                              "x": 348.41,
+                              "y": 22.5
+                            },
+                            "size": {
+                              "x": 44.59,
+                              "y": 15
+                            },
+                            "textData": {
+                              "characters": "[02]"
+                            },
+                            "fontName": {
+                              "family": "Consolas"
+                            },
+                            "fontSize": 13,
+                            "fontWeight": 700,
+                            "textAlignHorizontal": "LEFT",
+                            "textAutoResize": "NONE",
+                            "fillPaints": [
+                              {
+                                "type": "SOLID",
+                                "color": "#7d8cab"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "name": "menu-btn",
+                        "type": "FRAME",
+                        "transform": {
+                          "x": 0,
+                          "y": 160
+                        },
+                        "size": {
+                          "x": 420,
+                          "y": 60
+                        },
+                        "fillPaints": [
+                          {
+                            "type": "IMAGE",
+                            "image": {
+                              "filename": "images/w2c_0_7.png"
+                            },
+                            "scaleMode": "FILL"
+                          }
+                        ],
+                        "frameMaskDisabled": true,
+                        "children": [
+                          {
+                            "name": "labelText",
+                            "type": "TEXT",
+                            "transform": {
+                              "x": 30,
+                              "y": 21
+                            },
+                            "size": {
+                              "x": 75,
+                              "y": 21
+                            },
+                            "textData": {
+                              "characters": "排位赛"
+                            },
+                            "fontName": {
+                              "family": "Bahnschrift"
+                            },
+                            "fontSize": 21,
+                            "fontWeight": 700,
+                            "textAlignHorizontal": "LEFT",
+                            "textAutoResize": "NONE",
+                            "fillPaints": [
+                              {
+                                "type": "SOLID",
+                                "color": "#e8f1ff"
+                              }
+                            ]
+                          },
+                          {
+                            "name": "labelText",
+                            "type": "TEXT",
+                            "transform": {
+                              "x": 348.41,
+                              "y": 22.5
+                            },
+                            "size": {
+                              "x": 44.59,
+                              "y": 15
+                            },
+                            "textData": {
+                              "characters": "[03]"
+                            },
+                            "fontName": {
+                              "family": "Consolas"
+                            },
+                            "fontSize": 13,
+                            "fontWeight": 700,
+                            "textAlignHorizontal": "LEFT",
+                            "textAutoResize": "NONE",
+                            "fillPaints": [
+                              {
+                                "type": "SOLID",
+                                "color": "#7d8cab"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "name": "menu-btn",
+                        "type": "FRAME",
+                        "transform": {
+                          "x": 0,
+                          "y": 232
+                        },
+                        "size": {
+                          "x": 420,
+                          "y": 60
+                        },
+                        "fillPaints": [
+                          {
+                            "type": "IMAGE",
+                            "image": {
+                              "filename": "images/w2c_0_8.png"
+                            },
+                            "scaleMode": "FILL"
+                          }
+                        ],
+                        "frameMaskDisabled": true,
+                        "children": [
+                          {
+                            "name": "labelText",
+                            "type": "TEXT",
+                            "transform": {
+                              "x": 30,
+                              "y": 21
+                            },
+                            "size": {
+                              "x": 50,
+                              "y": 21
+                            },
+                            "textData": {
+                              "characters": "设置"
+                            },
+                            "fontName": {
+                              "family": "Bahnschrift"
+                            },
+                            "fontSize": 21,
+                            "fontWeight": 700,
+                            "textAlignHorizontal": "LEFT",
+                            "textAutoResize": "NONE",
+                            "fillPaints": [
+                              {
+                                "type": "SOLID",
+                                "color": "#e8f1ff"
+                              }
+                            ]
+                          },
+                          {
+                            "name": "labelText",
+                            "type": "TEXT",
+                            "transform": {
+                              "x": 348.41,
+                              "y": 22.5
+                            },
+                            "size": {
+                              "x": 44.59,
+                              "y": 15
+                            },
+                            "textData": {
+                              "characters": "[04]"
+                            },
+                            "fontName": {
+                              "family": "Consolas"
+                            },
+                            "fontSize": 13,
+                            "fontWeight": 700,
+                            "textAlignHorizontal": "LEFT",
+                            "textAutoResize": "NONE",
+                            "fillPaints": [
+                              {
+                                "type": "SOLID",
+                                "color": "#7d8cab"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "season-card",
+                    "type": "FRAME",
+                    "transform": {
+                      "x": 854,
+                      "y": 108
+                    },
+                    "size": {
+                      "x": 330,
+                      "y": 186
+                    },
+                    "fillPaints": [
+                      {
+                        "type": "IMAGE",
+                        "image": {
+                          "filename": "images/w2c_0_9.png"
+                        },
+                        "scaleMode": "FILL"
+                      }
+                    ],
+                    "frameMaskDisabled": true,
+                    "children": [
+                      {
+                        "name": "hintText",
+                        "type": "TEXT",
+                        "transform": {
+                          "x": 25,
+                          "y": 27
+                        },
+                        "size": {
+                          "x": 145.17,
+                          "y": 14
+                        },
+                        "textData": {
+                          "characters": "SEASON 7 // 限时"
+                        },
+                        "fontName": {
+                          "family": "Consolas"
+                        },
+                        "fontSize": 12,
+                        "fontWeight": 400,
+                        "textAlignHorizontal": "LEFT",
+                        "textAutoResize": "NONE",
+                        "fillPaints": [
+                          {
+                            "type": "SOLID",
+                            "color": "#ffb63d"
+                          }
+                        ]
+                      },
+                      {
+                        "name": "labelText",
+                        "type": "TEXT",
+                        "transform": {
+                          "x": 25,
+                          "y": 56
+                        },
+                        "size": {
+                          "x": 108,
+                          "y": 26
+                        },
+                        "textData": {
+                          "characters": "霓虹坠落"
+                        },
+                        "fontName": {
+                          "family": "Bahnschrift"
+                        },
+                        "fontSize": 26,
+                        "fontWeight": 800,
+                        "textAlignHorizontal": "LEFT",
+                        "textAutoResize": "NONE",
+                        "fillPaints": [
+                          {
+                            "type": "SOLID",
+                            "color": "#e8f1ff"
+                          }
+                        ]
+                      },
+                      {
+                        "name": "hintText",
+                        "type": "TEXT",
+                        "transform": {
+                          "x": 25,
+                          "y": 97
+                        },
+                        "size": {
+                          "x": 142.08,
+                          "y": 17
+                        },
+                        "textData": {
+                          "characters": "剩余 12 天 08:42:17"
+                        },
+                        "fontName": {
+                          "family": "Consolas"
+                        },
+                        "fontSize": 14,
+                        "fontWeight": 400,
+                        "textAlignHorizontal": "LEFT",
+                        "textAutoResize": "NONE",
+                        "fillPaints": [
+                          {
+                            "type": "SOLID",
+                            "color": "#7d8cab"
+                          }
+                        ]
+                      },
+                      {
+                        "name": "season-bar",
+                        "type": "FRAME",
+                        "transform": {
+                          "x": 25,
+                          "y": 128
+                        },
+                        "size": {
+                          "x": 280,
+                          "y": 8
+                        },
+                        "fillPaints": [
+                          {
+                            "type": "SOLID",
+                            "color": "#1a2440"
+                          }
+                        ],
+                        "cornerRadius": 4,
+                        "frameMaskDisabled": true,
+                        "children": [
+                          {
+                            "name": "season-fill",
+                            "type": "FRAME",
+                            "transform": {
+                              "x": 0,
+                              "y": 0
+                            },
+                            "size": {
+                              "x": 173.59,
+                              "y": 8
+                            },
+                            "fillPaints": [
+                              {
+                                "type": "IMAGE",
+                                "image": {
+                                  "filename": "images/w2c_0_10.png"
+                                },
+                                "scaleMode": "FILL"
+                              }
+                            ],
+                            "frameMaskDisabled": true
+                          }
+                        ]
+                      },
+                      {
+                        "name": "levelText",
+                        "type": "TEXT",
+                        "transform": {
+                          "x": 227.67,
+                          "y": 146
+                        },
+                        "size": {
+                          "x": 77.33,
+                          "y": 15
+                        },
+                        "textData": {
+                          "characters": "62 / 100 级"
+                        },
+                        "fontName": {
+                          "family": "Consolas"
+                        },
+                        "fontSize": 13,
+                        "fontWeight": 400,
+                        "textAlignHorizontal": "RIGHT",
+                        "textAutoResize": "NONE",
+                        "fillPaints": [
+                          {
+                            "type": "SOLID",
+                            "color": "#ffb63d"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "bottom-bar",
+                    "type": "FRAME",
+                    "transform": {
+                      "x": 0,
+                      "y": 624
+                    },
+                    "size": {
+                      "x": 1280,
+                      "y": 96
+                    },
+                    "fillPaints": [
+                      {
+                        "type": "IMAGE",
+                        "image": {
+                          "filename": "images/w2c_0_11.png"
+                        },
+                        "scaleMode": "FILL"
+                      }
+                    ],
+                    "frameMaskDisabled": true,
+                    "children": [
+                      {
+                        "name": "hintText",
+                        "type": "TEXT",
+                        "transform": {
+                          "x": 971.05,
+                          "y": -23
+                        },
+                        "size": {
+                          "x": 212.95,
+                          "y": 14
+                        },
+                        "textData": {
+                          "characters": "BUILD 7.2.1-beta // figo 转换样例"
+                        },
+                        "fontName": {
+                          "family": "Consolas"
+                        },
+                        "fontSize": 12,
+                        "fontWeight": 400,
+                        "textAlignHorizontal": "LEFT",
+                        "textAutoResize": "NONE",
+                        "fillPaints": [
+                          {
+                            "type": "SOLID",
+                            "color": "#7d8cab"
+                          }
+                        ]
+                      },
+                      {
+                        "name": "player-chip",
+                        "type": "FRAME",
+                        "transform": {
+                          "x": 96,
+                          "y": 19.5
+                        },
+                        "size": {
+                          "x": 302.08,
+                          "y": 58
+                        },
+                        "frameMaskDisabled": true,
+                        "children": [
+                          {
+                            "name": "avatar",
+                            "type": "FRAME",
+                            "transform": {
+                              "x": -18,
+                              "y": -18
+                            },
+                            "size": {
+                              "x": 94,
+                              "y": 94
+                            },
+                            "fillPaints": [
+                              {
+                                "type": "IMAGE",
+                                "image": {
+                                  "filename": "images/w2c_0_12.png"
+                                },
+                                "scaleMode": "FILL"
+                              }
+                            ],
+                            "effects": [
+                              {
+                                "type": "DROP_SHADOW",
+                                "color": "#00e4ff73",
+                                "offset": {
+                                  "x": 0,
+                                  "y": 0
+                                },
+                                "radius": 18,
+                                "spread": 0
+                              }
+                            ],
+                            "frameMaskDisabled": true
+                          },
+                          {
+                            "name": "div_1",
+                            "type": "FRAME",
+                            "transform": {
+                              "x": 74,
+                              "y": 7.5
+                            },
+                            "size": {
+                              "x": 127.58,
+                              "y": 43
+                            },
+                            "frameMaskDisabled": true,
+                            "children": [
+                              {
+                                "name": "username",
+                                "type": "TEXT",
+                                "transform": {
+                                  "x": 0,
+                                  "y": 2
+                                },
+                                "size": {
+                                  "x": 127.58,
+                                  "y": 19
+                                },
+                                "textData": {
+                                  "characters": "NOVA_Striker"
+                                },
+                                "fontName": {
+                                  "family": "Bahnschrift"
+                                },
+                                "fontSize": 19,
+                                "fontWeight": 700,
+                                "textAlignHorizontal": "LEFT",
+                                "textAutoResize": "NONE",
+                                "fillPaints": [
+                                  {
+                                    "type": "SOLID",
+                                    "color": "#e8f1ff"
+                                  }
+                                ]
+                              },
+                              {
+                                "name": "hintText",
+                                "type": "TEXT",
+                                "transform": {
+                                  "x": 0,
+                                  "y": 28
+                                },
+                                "size": {
+                                  "x": 126.08,
+                                  "y": 15
+                                },
+                                "textData": {
+                                  "characters": "钻石 II · 2417 pts"
+                                },
+                                "fontName": {
+                                  "family": "Consolas"
+                                },
+                                "fontSize": 13,
+                                "fontWeight": 400,
+                                "textAlignHorizontal": "LEFT",
+                                "textAutoResize": "NONE",
+                                "fillPaints": [
+                                  {
+                                    "type": "SOLID",
+                                    "color": "#00e5ff"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "name": "level-badge",
+                            "type": "FRAME",
+                            "transform": {
+                              "x": 235.58,
+                              "y": 14.5
+                            },
+                            "size": {
+                              "x": 66.5,
+                              "y": 29
+                            },
+                            "fillPaints": [
+                              {
+                                "type": "IMAGE",
+                                "image": {
+                                  "filename": "images/w2c_0_13.png"
+                                },
+                                "scaleMode": "FILL"
+                              }
+                            ],
+                            "frameMaskDisabled": true,
+                            "children": [
+                              {
+                                "name": "levelText",
+                                "type": "TEXT",
+                                "transform": {
+                                  "x": 14,
+                                  "y": 6
+                                },
+                                "size": {
+                                  "x": 38.5,
+                                  "y": 17
+                                },
+                                "textData": {
+                                  "characters": "LV 62"
+                                },
+                                "fontName": {
+                                  "family": "Consolas"
+                                },
+                                "fontSize": 14,
+                                "fontWeight": 700,
+                                "textAlignHorizontal": "LEFT",
+                                "textAutoResize": "NONE",
+                                "fillPaints": [
+                                  {
+                                    "type": "SOLID",
+                                    "color": "#06121c"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "name": "currency-group",
+                        "type": "FRAME",
+                        "transform": {
+                          "x": 922.44,
+                          "y": 28
+                        },
+                        "size": {
+                          "x": 261.56,
+                          "y": 41
+                        },
+                        "frameMaskDisabled": true,
+                        "children": [
+                          {
+                            "name": "currency",
+                            "type": "FRAME",
+                            "transform": {
+                              "x": 0,
+                              "y": 0
+                            },
+                            "size": {
+                              "x": 131.58,
+                              "y": 41
+                            },
+                            "fillPaints": [
+                              {
+                                "type": "SOLID",
+                                "color": "#0e1526",
+                                "opacity": 0.902
+                              }
+                            ],
+                            "strokePaints": [
+                              {
+                                "type": "SOLID",
+                                "color": "#1d2a45"
+                              }
+                            ],
+                            "strokeWeight": 1,
+                            "strokeAlign": "INSIDE",
+                            "cornerRadius": 20,
+                            "frameMaskDisabled": true,
+                            "children": [
+                              {
+                                "name": "coin",
+                                "type": "FRAME",
+                                "transform": {
+                                  "x": 21,
+                                  "y": 11.5
+                                },
+                                "size": {
+                                  "x": 18,
+                                  "y": 18
+                                },
+                                "fillPaints": [
+                                  {
+                                    "type": "IMAGE",
+                                    "image": {
+                                      "filename": "images/w2c_0_14.png"
+                                    },
+                                    "scaleMode": "FILL"
+                                  }
+                                ],
+                                "frameMaskDisabled": true
+                              },
+                              {
+                                "name": "count",
+                                "type": "TEXT",
+                                "transform": {
+                                  "x": 49,
+                                  "y": 11
+                                },
+                                "size": {
+                                  "x": 61.58,
+                                  "y": 19
+                                },
+                                "textData": {
+                                  "characters": "128,450"
+                                },
+                                "fontName": {
+                                  "family": "Consolas"
+                                },
+                                "fontSize": 16,
+                                "fontWeight": 400,
+                                "textAlignHorizontal": "LEFT",
+                                "textAutoResize": "NONE",
+                                "fillPaints": [
+                                  {
+                                    "type": "SOLID",
+                                    "color": "#e8f1ff"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "name": "currency",
+                            "type": "FRAME",
+                            "transform": {
+                              "x": 149.58,
+                              "y": 0
+                            },
+                            "size": {
+                              "x": 111.98,
+                              "y": 41
+                            },
+                            "fillPaints": [
+                              {
+                                "type": "SOLID",
+                                "color": "#0e1526",
+                                "opacity": 0.902
+                              }
+                            ],
+                            "strokePaints": [
+                              {
+                                "type": "SOLID",
+                                "color": "#1d2a45"
+                              }
+                            ],
+                            "strokeWeight": 1,
+                            "strokeAlign": "INSIDE",
+                            "cornerRadius": 20,
+                            "frameMaskDisabled": true,
+                            "children": [
+                              {
+                                "name": "gem",
+                                "type": "FRAME",
+                                "transform": {
+                                  "x": 17.69,
+                                  "y": 9.19
+                                },
+                                "size": {
+                                  "x": 22.63,
+                                  "y": 22.63
+                                },
+                                "fillPaints": [
+                                  {
+                                    "type": "IMAGE",
+                                    "image": {
+                                      "filename": "images/w2c_0_15.png"
+                                    },
+                                    "scaleMode": "FILL"
+                                  }
+                                ],
+                                "frameMaskDisabled": true
+                              },
+                              {
+                                "name": "count",
+                                "type": "TEXT",
+                                "transform": {
+                                  "x": 47,
+                                  "y": 11
+                                },
+                                "size": {
+                                  "x": 43.98,
+                                  "y": 19
+                                },
+                                "textData": {
+                                  "characters": "3,205"
+                                },
+                                "fontName": {
+                                  "family": "Consolas"
+                                },
+                                "fontSize": 16,
+                                "fontWeight": 400,
+                                "textAlignHorizontal": "LEFT",
+                                "textAutoResize": "NONE",
+                                "fillPaints": [
+                                  {
+                                    "type": "SOLID",
+                                    "color": "#e8f1ff"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "scrollDirection": "VERTICAL"
+          },
+          {
+            "name": "settings",
+            "type": "FRAME",
+            "transform": {
+              "x": 1340,
+              "y": 0
+            },
+            "size": {
+              "x": 1280,
+              "y": 720
+            },
+            "fillPaints": [
+              {
+                "type": "SOLID",
+                "color": "#070b16"
+              }
+            ],
+            "frameMaskDisabled": false,
+            "children": [
+              {
+                "name": "screen",
+                "type": "FRAME",
+                "transform": {
+                  "x": 0,
+                  "y": 0
+                },
+                "size": {
+                  "x": 1280,
+                  "y": 720
+                },
+                "frameMaskDisabled": true,
+                "children": [
+                  {
+                    "name": "space-bg",
+                    "type": "FRAME",
+                    "transform": {
+                      "x": 0,
+                      "y": 0
+                    },
+                    "size": {
+                      "x": 1280,
+                      "y": 720
+                    },
+                    "fillPaints": [
+                      {
+                        "type": "IMAGE",
+                        "image": {
+                          "filename": "images/w2c_1_1.png"
+                        },
+                        "scaleMode": "FILL"
+                      }
+                    ],
+                    "frameMaskDisabled": true
+                  },
+                  {
+                    "name": "dim",
+                    "type": "FRAME",
+                    "transform": {
+                      "x": 0,
+                      "y": 0
+                    },
+                    "size": {
+                      "x": 1280,
+                      "y": 720
+                    },
+                    "fillPaints": [
+                      {
+                        "type": "SOLID",
+                        "color": "#03060a",
+                        "opacity": 0.722
+                      }
+                    ],
+                    "frameMaskDisabled": true
+                  },
+                  {
+                    "name": "settings-panel",
+                    "type": "FRAME",
+                    "transform": {
+                      "x": 320,
+                      "y": 70
+                    },
+                    "size": {
+                      "x": 640,
+                      "y": 580
+                    },
+                    "fillPaints": [
+                      {
+                        "type": "IMAGE",
+                        "image": {
+                          "filename": "images/w2c_1_2.png"
+                        },
+                        "scaleMode": "FILL"
+                      }
+                    ],
+                    "frameMaskDisabled": true,
+                    "children": [
+                      {
+                        "name": "labelText",
+                        "type": "TEXT",
+                        "transform": {
+                          "x": 41,
+                          "y": 42
+                        },
+                        "size": {
+                          "x": 80,
+                          "y": 34
+                        },
+                        "textData": {
+                          "characters": "设置"
+                        },
+                        "fontName": {
+                          "family": "Bahnschrift"
+                        },
+                        "fontSize": 34,
+                        "fontWeight": 800,
+                        "textAlignHorizontal": "LEFT",
+                        "textAutoResize": "NONE",
+                        "fillPaints": [
+                          {
+                            "type": "SOLID",
+                            "color": "#e8f1ff"
+                          }
+                        ]
+                      },
+                      {
+                        "name": "hintText",
+                        "type": "TEXT",
+                        "transform": {
+                          "x": 41,
+                          "y": 86
+                        },
+                        "size": {
+                          "x": 178.69,
+                          "y": 15
+                        },
+                        "textData": {
+                          "characters": "SETTINGS // AUDIO & VIDEO"
+                        },
+                        "fontName": {
+                          "family": "Consolas"
+                        },
+                        "fontSize": 13,
+                        "fontWeight": 400,
+                        "textAlignHorizontal": "LEFT",
+                        "textAutoResize": "NONE",
+                        "fillPaints": [
+                          {
+                            "type": "SOLID",
+                            "color": "#7d8cab"
+                          }
+                        ]
+                      },
+                      {
+                        "name": "tab-row",
+                        "type": "FRAME",
+                        "transform": {
+                          "x": 41,
+                          "y": 125
+                        },
+                        "size": {
+                          "x": 558,
+                          "y": 48
+                        },
+                        "fillPaints": [
+                          {
+                            "type": "IMAGE",
+                            "image": {
+                              "filename": "images/w2c_1_3.png"
+                            },
+                            "scaleMode": "FILL"
+                          }
+                        ],
+                        "frameMaskDisabled": true,
+                        "children": [
+                          {
+                            "name": "tab",
+                            "type": "FRAME",
+                            "transform": {
+                              "x": 0,
+                              "y": 0
+                            },
+                            "size": {
+                              "x": 82,
+                              "y": 47
+                            },
+                            "fillPaints": [
+                              {
+                                "type": "IMAGE",
+                                "image": {
+                                  "filename": "images/w2c_1_4.png"
+                                },
+                                "scaleMode": "FILL"
+                              }
+                            ],
+                            "frameMaskDisabled": true,
+                            "children": [
+                              {
+                                "name": "labelText",
+                                "type": "TEXT",
+                                "transform": {
+                                  "x": 22,
+                                  "y": 14
+                                },
+                                "size": {
+                                  "x": 38,
+                                  "y": 16
+                                },
+                                "textData": {
+                                  "characters": "音频"
+                                },
+                                "fontName": {
+                                  "family": "Bahnschrift"
+                                },
+                                "fontSize": 16,
+                                "fontWeight": 700,
+                                "textAlignHorizontal": "LEFT",
+                                "textAutoResize": "NONE",
+                                "fillPaints": [
+                                  {
+                                    "type": "SOLID",
+                                    "color": "#00e5ff"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "name": "tab",
+                            "type": "FRAME",
+                            "transform": {
+                              "x": 92,
+                              "y": 0
+                            },
+                            "size": {
+                              "x": 82,
+                              "y": 47
+                            },
+                            "fillPaints": [
+                              {
+                                "type": "IMAGE",
+                                "image": {
+                                  "filename": "images/w2c_1_5.png"
+                                },
+                                "scaleMode": "FILL"
+                              }
+                            ],
+                            "frameMaskDisabled": true,
+                            "children": [
+                              {
+                                "name": "labelText",
+                                "type": "TEXT",
+                                "transform": {
+                                  "x": 22,
+                                  "y": 14
+                                },
+                                "size": {
+                                  "x": 38,
+                                  "y": 16
+                                },
+                                "textData": {
+                                  "characters": "画面"
+                                },
+                                "fontName": {
+                                  "family": "Bahnschrift"
+                                },
+                                "fontSize": 16,
+                                "fontWeight": 700,
+                                "textAlignHorizontal": "LEFT",
+                                "textAutoResize": "NONE",
+                                "fillPaints": [
+                                  {
+                                    "type": "SOLID",
+                                    "color": "#7d8cab"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "name": "tab",
+                            "type": "FRAME",
+                            "transform": {
+                              "x": 184,
+                              "y": 0
+                            },
+                            "size": {
+                              "x": 82,
+                              "y": 47
+                            },
+                            "fillPaints": [
+                              {
+                                "type": "IMAGE",
+                                "image": {
+                                  "filename": "images/w2c_1_6.png"
+                                },
+                                "scaleMode": "FILL"
+                              }
+                            ],
+                            "frameMaskDisabled": true,
+                            "children": [
+                              {
+                                "name": "labelText",
+                                "type": "TEXT",
+                                "transform": {
+                                  "x": 22,
+                                  "y": 14
+                                },
+                                "size": {
+                                  "x": 38,
+                                  "y": 16
+                                },
+                                "textData": {
+                                  "characters": "操作"
+                                },
+                                "fontName": {
+                                  "family": "Bahnschrift"
+                                },
+                                "fontSize": 16,
+                                "fontWeight": 700,
+                                "textAlignHorizontal": "LEFT",
+                                "textAutoResize": "NONE",
+                                "fillPaints": [
+                                  {
+                                    "type": "SOLID",
+                                    "color": "#7d8cab"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "name": "tab",
+                            "type": "FRAME",
+                            "transform": {
+                              "x": 276,
+                              "y": 0
+                            },
+                            "size": {
+                              "x": 82,
+                              "y": 47
+                            },
+                            "fillPaints": [
+                              {
+                                "type": "IMAGE",
+                                "image": {
+                                  "filename": "images/w2c_1_7.png"
+                                },
+                                "scaleMode": "FILL"
+                              }
+                            ],
+                            "frameMaskDisabled": true,
+                            "children": [
+                              {
+                                "name": "labelText",
+                                "type": "TEXT",
+                                "transform": {
+                                  "x": 22,
+                                  "y": 14
+                                },
+                                "size": {
+                                  "x": 38,
+                                  "y": 16
+                                },
+                                "textData": {
+                                  "characters": "网络"
+                                },
+                                "fontName": {
+                                  "family": "Bahnschrift"
+                                },
+                                "fontSize": 16,
+                                "fontWeight": 700,
+                                "textAlignHorizontal": "LEFT",
+                                "textAutoResize": "NONE",
+                                "fillPaints": [
+                                  {
+                                    "type": "SOLID",
+                                    "color": "#7d8cab"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "name": "setting-row",
+                        "type": "FRAME",
+                        "transform": {
+                          "x": 41,
+                          "y": 199
+                        },
+                        "size": {
+                          "x": 558,
+                          "y": 24
+                        },
+                        "frameMaskDisabled": true,
+                        "children": [
+                          {
+                            "name": "labelText",
+                            "type": "TEXT",
+                            "transform": {
+                              "x": 0,
+                              "y": 5
+                            },
+                            "size": {
+                              "x": 54,
+                              "y": 17
+                            },
+                            "textData": {
+                              "characters": "主音量"
+                            },
+                            "fontName": {
+                              "family": "Bahnschrift"
+                            },
+                            "fontSize": 17,
+                            "fontWeight": 400,
+                            "textAlignHorizontal": "LEFT",
+                            "textAutoResize": "NONE",
+                            "fillPaints": [
+                              {
+                                "type": "SOLID",
+                                "color": "#e8f1ff"
+                              }
+                            ]
+                          },
+                          {
+                            "name": "slider-track",
+                            "type": "FRAME",
+                            "transform": {
+                              "x": 190,
+                              "y": 8
+                            },
+                            "size": {
+                              "x": 292,
+                              "y": 8
+                            },
+                            "fillPaints": [
+                              {
+                                "type": "SOLID",
+                                "color": "#1a2440"
+                              }
+                            ],
+                            "cornerRadius": 4,
+                            "frameMaskDisabled": true,
+                            "children": [
+                              {
+                                "name": "slider-fill",
+                                "type": "FRAME",
+                                "transform": {
+                                  "x": 0,
+                                  "y": 0
+                                },
+                                "size": {
+                                  "x": 233.59,
+                                  "y": 8
+                                },
+                                "fillPaints": [
+                                  {
+                                    "type": "IMAGE",
+                                    "image": {
+                                      "filename": "images/w2c_1_8.png"
+                                    },
+                                    "scaleMode": "FILL"
+                                  }
+                                ],
+                                "frameMaskDisabled": true
+                              },
+                              {
+                                "name": "slider-knob",
+                                "type": "FRAME",
+                                "transform": {
+                                  "x": 223.59,
+                                  "y": -6
+                                },
+                                "size": {
+                                  "x": 20,
+                                  "y": 20
+                                },
+                                "fillPaints": [
+                                  {
+                                    "type": "SOLID",
+                                    "color": "#eafbff"
+                                  }
+                                ],
+                                "strokePaints": [
+                                  {
+                                    "type": "SOLID",
+                                    "color": "#00e5ff"
+                                  }
+                                ],
+                                "strokeWeight": 3,
+                                "strokeAlign": "INSIDE",
+                                "cornerRadius": 10,
+                                "effects": [
+                                  {
+                                    "type": "DROP_SHADOW",
+                                    "color": "#00e4ff99",
+                                    "offset": {
+                                      "x": 0,
+                                      "y": 0
+                                    },
+                                    "radius": 12,
+                                    "spread": 0
+                                  }
+                                ],
+                                "frameMaskDisabled": true
+                              }
+                            ]
+                          },
+                          {
+                            "name": "percent",
+                            "type": "TEXT",
+                            "transform": {
+                              "x": 533.25,
+                              "y": 3
+                            },
+                            "size": {
+                              "x": 24.75,
+                              "y": 18
+                            },
+                            "textData": {
+                              "characters": "80%"
+                            },
+                            "fontName": {
+                              "family": "Consolas"
+                            },
+                            "fontSize": 15,
+                            "fontWeight": 400,
+                            "textAlignHorizontal": "RIGHT",
+                            "textAutoResize": "NONE",
+                            "fillPaints": [
+                              {
+                                "type": "SOLID",
+                                "color": "#00e5ff"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "name": "setting-row",
+                        "type": "FRAME",
+                        "transform": {
+                          "x": 41,
+                          "y": 249
+                        },
+                        "size": {
+                          "x": 558,
+                          "y": 24
+                        },
+                        "frameMaskDisabled": true,
+                        "children": [
+                          {
+                            "name": "labelText",
+                            "type": "TEXT",
+                            "transform": {
+                              "x": 0,
+                              "y": 5
+                            },
+                            "size": {
+                              "x": 72,
+                              "y": 17
+                            },
+                            "textData": {
+                              "characters": "音乐音量"
+                            },
+                            "fontName": {
+                              "family": "Bahnschrift"
+                            },
+                            "fontSize": 17,
+                            "fontWeight": 400,
+                            "textAlignHorizontal": "LEFT",
+                            "textAutoResize": "NONE",
+                            "fillPaints": [
+                              {
+                                "type": "SOLID",
+                                "color": "#e8f1ff"
+                              }
+                            ]
+                          },
+                          {
+                            "name": "slider-track",
+                            "type": "FRAME",
+                            "transform": {
+                              "x": 190,
+                              "y": 8
+                            },
+                            "size": {
+                              "x": 292,
+                              "y": 8
+                            },
+                            "fillPaints": [
+                              {
+                                "type": "SOLID",
+                                "color": "#1a2440"
+                              }
+                            ],
+                            "cornerRadius": 4,
+                            "frameMaskDisabled": true,
+                            "children": [
+                              {
+                                "name": "slider-fill",
+                                "type": "FRAME",
+                                "transform": {
+                                  "x": 0,
+                                  "y": 0
+                                },
+                                "size": {
+                                  "x": 160.59,
+                                  "y": 8
+                                },
+                                "fillPaints": [
+                                  {
+                                    "type": "IMAGE",
+                                    "image": {
+                                      "filename": "images/w2c_1_9.png"
+                                    },
+                                    "scaleMode": "FILL"
+                                  }
+                                ],
+                                "frameMaskDisabled": true
+                              },
+                              {
+                                "name": "slider-knob",
+                                "type": "FRAME",
+                                "transform": {
+                                  "x": 150.59,
+                                  "y": -6
+                                },
+                                "size": {
+                                  "x": 20,
+                                  "y": 20
+                                },
+                                "fillPaints": [
+                                  {
+                                    "type": "SOLID",
+                                    "color": "#eafbff"
+                                  }
+                                ],
+                                "strokePaints": [
+                                  {
+                                    "type": "SOLID",
+                                    "color": "#00e5ff"
+                                  }
+                                ],
+                                "strokeWeight": 3,
+                                "strokeAlign": "INSIDE",
+                                "cornerRadius": 10,
+                                "effects": [
+                                  {
+                                    "type": "DROP_SHADOW",
+                                    "color": "#00e4ff99",
+                                    "offset": {
+                                      "x": 0,
+                                      "y": 0
+                                    },
+                                    "radius": 12,
+                                    "spread": 0
+                                  }
+                                ],
+                                "frameMaskDisabled": true
+                              }
+                            ]
+                          },
+                          {
+                            "name": "percent",
+                            "type": "TEXT",
+                            "transform": {
+                              "x": 533.25,
+                              "y": 3
+                            },
+                            "size": {
+                              "x": 24.75,
+                              "y": 18
+                            },
+                            "textData": {
+                              "characters": "55%"
+                            },
+                            "fontName": {
+                              "family": "Consolas"
+                            },
+                            "fontSize": 15,
+                            "fontWeight": 400,
+                            "textAlignHorizontal": "RIGHT",
+                            "textAutoResize": "NONE",
+                            "fillPaints": [
+                              {
+                                "type": "SOLID",
+                                "color": "#00e5ff"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "name": "setting-row",
+                        "type": "FRAME",
+                        "transform": {
+                          "x": 41,
+                          "y": 299
+                        },
+                        "size": {
+                          "x": 558,
+                          "y": 30
+                        },
+                        "frameMaskDisabled": true,
+                        "children": [
+                          {
+                            "name": "labelText",
+                            "type": "TEXT",
+                            "transform": {
+                              "x": 0,
+                              "y": 8
+                            },
+                            "size": {
+                              "x": 72,
+                              "y": 17
+                            },
+                            "textData": {
+                              "characters": "全屏模式"
+                            },
+                            "fontName": {
+                              "family": "Bahnschrift"
+                            },
+                            "fontSize": 17,
+                            "fontWeight": 400,
+                            "textAlignHorizontal": "LEFT",
+                            "textAutoResize": "NONE",
+                            "fillPaints": [
+                              {
+                                "type": "SOLID",
+                                "color": "#e8f1ff"
+                              }
+                            ]
+                          },
+                          {
+                            "name": "toggle",
+                            "type": "FRAME",
+                            "transform": {
+                              "x": 190,
+                              "y": 0
+                            },
+                            "size": {
+                              "x": 64,
+                              "y": 30
+                            },
+                            "fillPaints": [
+                              {
+                                "type": "SOLID",
+                                "color": "#00e3ff",
+                                "opacity": 0.251
+                              }
+                            ],
+                            "strokePaints": [
+                              {
+                                "type": "SOLID",
+                                "color": "#00e5ff"
+                              }
+                            ],
+                            "strokeWeight": 1,
+                            "strokeAlign": "INSIDE",
+                            "cornerRadius": 15,
+                            "frameMaskDisabled": true,
+                            "children": [
+                              {
+                                "name": "toggle-dot",
+                                "type": "FRAME",
+                                "transform": {
+                                  "x": 37,
+                                  "y": 4
+                                },
+                                "size": {
+                                  "x": 22,
+                                  "y": 22
+                                },
+                                "fillPaints": [
+                                  {
+                                    "type": "SOLID",
+                                    "color": "#00e5ff"
+                                  }
+                                ],
+                                "cornerRadius": 11,
+                                "effects": [
+                                  {
+                                    "type": "DROP_SHADOW",
+                                    "color": "#00e5ffb3",
+                                    "offset": {
+                                      "x": 0,
+                                      "y": 0
+                                    },
+                                    "radius": 10,
+                                    "spread": 0
+                                  }
+                                ],
+                                "frameMaskDisabled": true
+                              }
+                            ]
+                          },
+                          {
+                            "name": "labelText",
+                            "type": "TEXT",
+                            "transform": {
+                              "x": 274,
+                              "y": 7.5
+                            },
+                            "size": {
+                              "x": 28,
+                              "y": 17
+                            },
+                            "textData": {
+                              "characters": "开启"
+                            },
+                            "fontName": {
+                              "family": "Consolas"
+                            },
+                            "fontSize": 14,
+                            "fontWeight": 400,
+                            "textAlignHorizontal": "LEFT",
+                            "textAutoResize": "NONE",
+                            "fillPaints": [
+                              {
+                                "type": "SOLID",
+                                "color": "#00e5ff"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "name": "setting-row",
+                        "type": "FRAME",
+                        "transform": {
+                          "x": 41,
+                          "y": 355
+                        },
+                        "size": {
+                          "x": 558,
+                          "y": 30
+                        },
+                        "frameMaskDisabled": true,
+                        "children": [
+                          {
+                            "name": "labelText",
+                            "type": "TEXT",
+                            "transform": {
+                              "x": 0,
+                              "y": 8
+                            },
+                            "size": {
+                              "x": 72,
+                              "y": 17
+                            },
+                            "textData": {
+                              "characters": "垂直同步"
+                            },
+                            "fontName": {
+                              "family": "Bahnschrift"
+                            },
+                            "fontSize": 17,
+                            "fontWeight": 400,
+                            "textAlignHorizontal": "LEFT",
+                            "textAutoResize": "NONE",
+                            "fillPaints": [
+                              {
+                                "type": "SOLID",
+                                "color": "#e8f1ff"
+                              }
+                            ]
+                          },
+                          {
+                            "name": "toggle",
+                            "type": "FRAME",
+                            "transform": {
+                              "x": 190,
+                              "y": 0
+                            },
+                            "size": {
+                              "x": 64,
+                              "y": 30
+                            },
+                            "fillPaints": [
+                              {
+                                "type": "SOLID",
+                                "color": "#131c33"
+                              }
+                            ],
+                            "strokePaints": [
+                              {
+                                "type": "SOLID",
+                                "color": "#1d2a45"
+                              }
+                            ],
+                            "strokeWeight": 1,
+                            "strokeAlign": "INSIDE",
+                            "cornerRadius": 15,
+                            "frameMaskDisabled": true,
+                            "children": [
+                              {
+                                "name": "toggle-dot",
+                                "type": "FRAME",
+                                "transform": {
+                                  "x": 5,
+                                  "y": 4
+                                },
+                                "size": {
+                                  "x": 22,
+                                  "y": 22
+                                },
+                                "fillPaints": [
+                                  {
+                                    "type": "SOLID",
+                                    "color": "#3a4a70"
+                                  }
+                                ],
+                                "cornerRadius": 11,
+                                "frameMaskDisabled": true
+                              }
+                            ]
+                          },
+                          {
+                            "name": "labelText",
+                            "type": "TEXT",
+                            "transform": {
+                              "x": 274,
+                              "y": 7.5
+                            },
+                            "size": {
+                              "x": 28,
+                              "y": 17
+                            },
+                            "textData": {
+                              "characters": "关闭"
+                            },
+                            "fontName": {
+                              "family": "Consolas"
+                            },
+                            "fontSize": 14,
+                            "fontWeight": 400,
+                            "textAlignHorizontal": "LEFT",
+                            "textAutoResize": "NONE",
+                            "fillPaints": [
+                              {
+                                "type": "SOLID",
+                                "color": "#7d8cab"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "name": "setting-row",
+                        "type": "FRAME",
+                        "transform": {
+                          "x": 41,
+                          "y": 411
+                        },
+                        "size": {
+                          "x": 558,
+                          "y": 43
+                        },
+                        "frameMaskDisabled": true,
+                        "children": [
+                          {
+                            "name": "labelText",
+                            "type": "TEXT",
+                            "transform": {
+                              "x": 0,
+                              "y": 14.5
+                            },
+                            "size": {
+                              "x": 72,
+                              "y": 17
+                            },
+                            "textData": {
+                              "characters": "画质等级"
+                            },
+                            "fontName": {
+                              "family": "Bahnschrift"
+                            },
+                            "fontSize": 17,
+                            "fontWeight": 400,
+                            "textAlignHorizontal": "LEFT",
+                            "textAutoResize": "NONE",
+                            "fillPaints": [
+                              {
+                                "type": "SOLID",
+                                "color": "#e8f1ff"
+                              }
+                            ]
+                          },
+                          {
+                            "name": "seg-group",
+                            "type": "FRAME",
+                            "transform": {
+                              "x": 190,
+                              "y": 0
+                            },
+                            "size": {
+                              "x": 368,
+                              "y": 43
+                            },
+                            "frameMaskDisabled": true,
+                            "children": [
+                              {
+                                "name": "seg",
+                                "type": "FRAME",
+                                "transform": {
+                                  "x": 0,
+                                  "y": 0
+                                },
+                                "size": {
+                                  "x": 86,
+                                  "y": 43
+                                },
+                                "fillPaints": [
+                                  {
+                                    "type": "IMAGE",
+                                    "image": {
+                                      "filename": "images/w2c_1_10.png"
+                                    },
+                                    "scaleMode": "FILL"
+                                  }
+                                ],
+                                "frameMaskDisabled": true,
+                                "children": [
+                                  {
+                                    "name": "labelText",
+                                    "type": "TEXT",
+                                    "transform": {
+                                      "x": 26,
+                                      "y": 15
+                                    },
+                                    "size": {
+                                      "x": 34,
+                                      "y": 15
+                                    },
+                                    "textData": {
+                                      "characters": "流畅"
+                                    },
+                                    "fontName": {
+                                      "family": "Bahnschrift"
+                                    },
+                                    "fontSize": 15,
+                                    "fontWeight": 700,
+                                    "textAlignHorizontal": "CENTER",
+                                    "textAutoResize": "NONE",
+                                    "fillPaints": [
+                                      {
+                                        "type": "SOLID",
+                                        "color": "#7d8cab"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "name": "seg",
+                                "type": "FRAME",
+                                "transform": {
+                                  "x": 94,
+                                  "y": 0
+                                },
+                                "size": {
+                                  "x": 86,
+                                  "y": 43
+                                },
+                                "fillPaints": [
+                                  {
+                                    "type": "IMAGE",
+                                    "image": {
+                                      "filename": "images/w2c_1_11.png"
+                                    },
+                                    "scaleMode": "FILL"
+                                  }
+                                ],
+                                "frameMaskDisabled": true,
+                                "children": [
+                                  {
+                                    "name": "labelText",
+                                    "type": "TEXT",
+                                    "transform": {
+                                      "x": 26,
+                                      "y": 15
+                                    },
+                                    "size": {
+                                      "x": 34,
+                                      "y": 15
+                                    },
+                                    "textData": {
+                                      "characters": "均衡"
+                                    },
+                                    "fontName": {
+                                      "family": "Bahnschrift"
+                                    },
+                                    "fontSize": 15,
+                                    "fontWeight": 700,
+                                    "textAlignHorizontal": "CENTER",
+                                    "textAutoResize": "NONE",
+                                    "fillPaints": [
+                                      {
+                                        "type": "SOLID",
+                                        "color": "#7d8cab"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "name": "seg",
+                                "type": "FRAME",
+                                "transform": {
+                                  "x": 188,
+                                  "y": 0
+                                },
+                                "size": {
+                                  "x": 86,
+                                  "y": 43
+                                },
+                                "fillPaints": [
+                                  {
+                                    "type": "IMAGE",
+                                    "image": {
+                                      "filename": "images/w2c_1_12.png"
+                                    },
+                                    "scaleMode": "FILL"
+                                  }
+                                ],
+                                "frameMaskDisabled": true,
+                                "children": [
+                                  {
+                                    "name": "labelText",
+                                    "type": "TEXT",
+                                    "transform": {
+                                      "x": 26,
+                                      "y": 15
+                                    },
+                                    "size": {
+                                      "x": 34,
+                                      "y": 15
+                                    },
+                                    "textData": {
+                                      "characters": "高清"
+                                    },
+                                    "fontName": {
+                                      "family": "Bahnschrift"
+                                    },
+                                    "fontSize": 15,
+                                    "fontWeight": 700,
+                                    "textAlignHorizontal": "CENTER",
+                                    "textAutoResize": "NONE",
+                                    "fillPaints": [
+                                      {
+                                        "type": "SOLID",
+                                        "color": "#ffd7e6"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "name": "seg",
+                                "type": "FRAME",
+                                "transform": {
+                                  "x": 282,
+                                  "y": 0
+                                },
+                                "size": {
+                                  "x": 86,
+                                  "y": 43
+                                },
+                                "fillPaints": [
+                                  {
+                                    "type": "IMAGE",
+                                    "image": {
+                                      "filename": "images/w2c_1_13.png"
+                                    },
+                                    "scaleMode": "FILL"
+                                  }
+                                ],
+                                "frameMaskDisabled": true,
+                                "children": [
+                                  {
+                                    "name": "labelText",
+                                    "type": "TEXT",
+                                    "transform": {
+                                      "x": 26,
+                                      "y": 15
+                                    },
+                                    "size": {
+                                      "x": 34,
+                                      "y": 15
+                                    },
+                                    "textData": {
+                                      "characters": "极致"
+                                    },
+                                    "fontName": {
+                                      "family": "Bahnschrift"
+                                    },
+                                    "fontSize": 15,
+                                    "fontWeight": 700,
+                                    "textAlignHorizontal": "CENTER",
+                                    "textAutoResize": "NONE",
+                                    "fillPaints": [
+                                      {
+                                        "type": "SOLID",
+                                        "color": "#7d8cab"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "name": "panel-footer",
+                        "type": "FRAME",
+                        "transform": {
+                          "x": 41,
+                          "y": 497
+                        },
+                        "size": {
+                          "x": 558,
+                          "y": 52
+                        },
+                        "frameMaskDisabled": true,
+                        "children": [
+                          {
+                            "name": "ghost-btn",
+                            "type": "FRAME",
+                            "transform": {
+                              "x": 0,
+                              "y": 0
+                            },
+                            "size": {
+                              "x": 108,
+                              "y": 52
+                            },
+                            "fillPaints": [
+                              {
+                                "type": "IMAGE",
+                                "image": {
+                                  "filename": "images/w2c_1_14.png"
+                                },
+                                "scaleMode": "FILL"
+                              }
+                            ],
+                            "frameMaskDisabled": true,
+                            "children": [
+                              {
+                                "name": "labelText",
+                                "type": "TEXT",
+                                "transform": {
+                                  "x": 35,
+                                  "y": 19
+                                },
+                                "size": {
+                                  "x": 38,
+                                  "y": 16
+                                },
+                                "textData": {
+                                  "characters": "返回"
+                                },
+                                "fontName": {
+                                  "family": "Bahnschrift"
+                                },
+                                "fontSize": 16,
+                                "fontWeight": 700,
+                                "textAlignHorizontal": "LEFT",
+                                "textAutoResize": "NONE",
+                                "fillPaints": [
+                                  {
+                                    "type": "SOLID",
+                                    "color": "#7d8cab"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "name": "apply-btn",
+                            "type": "FRAME",
+                            "transform": {
+                              "x": 386,
+                              "y": 0
+                            },
+                            "size": {
+                              "x": 172,
+                              "y": 52
+                            },
+                            "fillPaints": [
+                              {
+                                "type": "IMAGE",
+                                "image": {
+                                  "filename": "images/w2c_1_15.png"
+                                },
+                                "scaleMode": "FILL"
+                              }
+                            ],
+                            "frameMaskDisabled": true,
+                            "children": [
+                              {
+                                "name": "labelText",
+                                "type": "TEXT",
+                                "transform": {
+                                  "x": 48,
+                                  "y": 18
+                                },
+                                "size": {
+                                  "x": 76,
+                                  "y": 16
+                                },
+                                "textData": {
+                                  "characters": "应用设置"
+                                },
+                                "fontName": {
+                                  "family": "Bahnschrift"
+                                },
+                                "fontSize": 16,
+                                "fontWeight": 800,
+                                "textAlignHorizontal": "LEFT",
+                                "textAutoResize": "NONE",
+                                "fillPaints": [
+                                  {
+                                    "type": "SOLID",
+                                    "color": "#071018"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "scrollDirection": "VERTICAL"
+          }
+        ]
+      }
+    ]
+  },
+  "styles": {}
+}

@@ -4,52 +4,37 @@
 #
 #   powershell -File tools/pack_unity_plugin.ps1
 #
-# The package bundles BOTH platform converters in Editor/Bin:
-#   figo2unity.exe  (Windows x64)   figo2unity  (macOS mach-o)
-# Each comes from a fresh build\ artifact when present, otherwise from the
-# committed unity-plugin\prebuilt\<platform>\ copy. After rebuilding a
-# converter on its native platform, refresh the prebuilt copy and commit it:
-#   Windows: Copy-Item build\figo2unity.exe unity-plugin\prebuilt\win-x64\
-#   macOS:   cp build/figo2unity unity-plugin/prebuilt/macos/
-# Build notes for the macOS binary: docs/agent-memory/unity-plugin-mac-support.md
+# The package ships WITHOUT converter binaries: the plugin
+# downloads the per-platform figo2unity from the public figo repo on first
+# convert (https://raw.githubusercontent.com/nowasm/figo/master/prebuild/,
+# cached in the user project's Library/FigoPrefabImporter/). To refresh the
+# published binaries, rebuild and commit them to ../figo/prebuild/
+# (win-x64/figo2unity.exe, macos/figo2unity universal — build notes:
+# docs/agent-memory/unity-plugin-mac-support.md).
 $ErrorActionPreference = "Stop"
 $repo  = Split-Path $PSScriptRoot -Parent
-$src   = Join-Path $repo "unity-plugin\FigoPrefabImporter"
+$src   = Join-Path $repo "unity-plugin\unityproj\Assets\FigoPrefabImporter"
 $out   = Join-Path $repo "build_unityplugin\FigoPrefabImporter"
 
-# Per platform: prefer the freshly built binary, fall back to the committed
-# prebuilt copy (so a Windows machine can pack the macOS binary and vice versa).
-function Resolve-Converter($built, $prebuilt) {
-    if (Test-Path $built) { return $built }
-    if (Test-Path $prebuilt) { return $prebuilt }
-    return $null
-}
-$exeWin = Resolve-Converter (Join-Path $repo "build\figo2unity.exe") `
-                            (Join-Path $repo "unity-plugin\prebuilt\win-x64\figo2unity.exe")
-$exeMac = Resolve-Converter (Join-Path $repo "build\figo2unity") `
-                            (Join-Path $repo "unity-plugin\prebuilt\macos\figo2unity")
-
-if (-not $exeWin) { throw "figo2unity.exe not found — build the repo first (see CLAUDE.md) or commit unity-plugin\prebuilt\win-x64\figo2unity.exe" }
-if (-not $exeMac) { Write-Warning "macOS converter missing (unity-plugin\prebuilt\macos\figo2unity) — packing a Windows-only plugin" }
+if (-not (Test-Path $src)) { throw "plugin source not found: $src" }
 
 if (Test-Path $out) { Remove-Item -Recurse -Force $out }
 New-Item -ItemType Directory -Force $out | Out-Null
 
-# plugin source (Editor scripts + docs)
+# plugin source (Editor scripts + docs + .meta files for stable GUIDs)
 Copy-Item -Recurse "$src\*" $out
 
-# converter binaries
-New-Item -ItemType Directory -Force "$out\Editor\Bin" | Out-Null
-Copy-Item $exeWin "$out\Editor\Bin\figo2unity.exe"
-if ($exeMac) { Copy-Item $exeMac "$out\Editor\Bin\figo2unity" }
+# no binaries in the package — fail loudly if a stray Editor/Bin sneaks back
+if (Test-Path "$out\Editor\Bin") { throw "Editor\Bin must not be packaged (converter is downloaded at first use) — remove it from $src" }
 
-# sample design (starfall: menu + settings, pre-captured canvas.json)
-New-Item -ItemType Directory -Force "$out\Samples" | Out-Null
-Copy-Item (Join-Path $repo "examples\html\starfall_menu.canvas.json") "$out\Samples\"
-Copy-Item -Recurse (Join-Path $repo "examples\html\images") "$out\Samples\images"
+# sample design (starfall: menu + settings, pre-captured canvas.json) —
+# normally already present in the source project (with .meta); refresh the
+# payload from examples/ without disturbing existing .meta files
+New-Item -ItemType Directory -Force "$out\Samples\images" | Out-Null
+Copy-Item (Join-Path $repo "examples\html\starfall_menu.canvas.json") "$out\Samples\" -Force
+Copy-Item (Join-Path $repo "examples\html\images\*") "$out\Samples\images\" -Force
 
 Write-Host "staged -> $out"
-Write-Host ("windows converter: " + $exeWin)
-Write-Host ("macos converter:   " + ($(if ($exeMac) { $exeMac } else { "(none)" })))
+Write-Host "converter: downloaded at first use from https://raw.githubusercontent.com/nowasm/figo/master/prebuild/"
 Get-ChildItem -Recurse $out -File | Measure-Object -Property Length -Sum |
     ForEach-Object { "{0} files, {1:N1} MB" -f $_.Count, ($_.Sum / 1MB) }

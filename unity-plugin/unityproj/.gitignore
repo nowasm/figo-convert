@@ -1,0 +1,25 @@
+# Unity generated state (rebuilt on open)
+[Ll]ibrary/
+[Tt]emp/
+[Ll]ogs/
+[Uu]serSettings/
+[Oo]bj/
+[Mm]emoryCaptures/
+[Rr]ecordings/
+
+# IDE / project files (regenerated)
+.vs/
+.idea/
+*.csproj
+*.sln
+*.user
+
+# batchmode / editor logs (e2e.log, editor.log, ...)
+*.log
+
+# FigoE2E batchmode output
+Assets/FigoE2EOut/
+Assets/FigoE2EOut.meta
+
+# OS cruft
+.DS_Store
