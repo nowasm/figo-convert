@@ -1,5 +1,7 @@
 # Figo Prefab Importer — Quick Start
 
+Version 1.0.0
+
 Turn a **Figma design (.fig)** or a **figo canvas.json** into ready-to-use
 **UGUI prefabs** (.prefab + textures + fonts), entirely inside the Editor.
 Windows and macOS Editors are supported.

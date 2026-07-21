@@ -15,6 +15,8 @@ namespace Figo.PrefabImporter
 {
     public class FigoPrefabImporterWindow : EditorWindow
     {
+        public const string Version = "1.0.0";
+
         enum ColorSpaceMode { AutoDetect, Gamma, Linear }
 
         string inputPath = "";
@@ -67,7 +69,12 @@ namespace Figo.PrefabImporter
         void OnGUI()
         {
             EditorGUILayout.Space(6);
-            EditorGUILayout.LabelField("Design input", EditorStyles.boldLabel);
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                EditorGUILayout.LabelField("Design input", EditorStyles.boldLabel);
+                GUILayout.FlexibleSpace();
+                GUILayout.Label("v" + Version, EditorStyles.miniLabel);
+            }
             using (new EditorGUILayout.HorizontalScope())
             {
                 inputPath = EditorGUILayout.TextField(
