@@ -6,6 +6,19 @@ Turn a **Figma design (.fig)** or a **figo canvas.json** into ready-to-use
 **UGUI prefabs** (.prefab + textures + fonts), entirely inside the Editor.
 Windows and macOS Editors are supported.
 
+> Full offline manual (setup guide, tutorial, option & scripting reference):
+> **`Documentation/FigoPrefabImporter_Manual.pdf`**
+
+## Demo scene
+
+Open **`Samples/FigoDemo.unity`** to see the end result without converting
+anything: the bundled Starfall sample design (main menu + settings screen),
+already converted to UGUI prefabs (`Samples/StarfallPrefabs/`) and placed
+under a Canvas. The *menu* screen is active; disable it and enable the
+*settings* instance to view the second screen. The source design the prefabs
+were generated from is `Samples/starfall_menu.canvas.json` — re-converting it
+with the importer (steps below) reproduces exactly these prefabs.
+
 ## Convert your first design
 
 1. Open **Tools → Figo Prefab Importer...**
@@ -66,6 +79,13 @@ is used only to fetch the converter itself, once).
 
 - Windows or macOS Editor, Unity 2022.3 or newer. The project needs
   `com.unity.ugui` (present in any UI project).
+- **Render pipelines**: works with Built-in, URP and HDRP alike. The package
+  ships no shaders or materials; the output is plain UGUI (Canvas / Image /
+  Text) using Unity's default UI material — no Render Pipeline Converter
+  step needed. (Linear-color-space conversions additionally generate a small
+  render-pipeline-independent UI text shader into your output folder.)
+  Verified end-to-end with URP 14 on Unity 2022.3 (demo scene renders
+  pixel-correct through a URP camera).
 - Supported design features: solid/gradient/image fills, strokes, per-corner
   radii, masks, blend modes, shadows/blurs, auto-layout and constraints,
   component instances with overrides, multi-line rich text.

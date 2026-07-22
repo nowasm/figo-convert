@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Figo Prefab Importer — User Manual</title>
+<style>
+  @page { size: A4; margin: 22mm 20mm; }
+  html { -webkit-print-color-adjust: exact; }
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 10.5pt; line-height: 1.55; color: #1a1a1a;
+    max-width: 170mm; margin: 0 auto;
+  }
+  h1 { font-size: 22pt; margin: 0 0 2mm; }
+  .subtitle { color: #555; margin: 0 0 10mm; font-size: 11pt; }
+  h2 { font-size: 14pt; margin: 9mm 0 3mm; padding-bottom: 1.5mm;
+       border-bottom: 2px solid #4a67d8; page-break-after: avoid; }
+  h3 { font-size: 11.5pt; margin: 6mm 0 2mm; page-break-after: avoid; }
+  p, li { text-align: justify; }
+  code, .path {
+    font-family: Consolas, "Courier New", monospace; font-size: 9.5pt;
+    background: #f1f3f7; padding: 0 3px; border-radius: 3px;
+  }
+  pre {
+    font-family: Consolas, "Courier New", monospace; font-size: 9pt;
+    background: #f1f3f7; padding: 3mm; border-radius: 4px;
+    white-space: pre-wrap; word-break: break-all;
+  }
+  table { border-collapse: collapse; width: 100%; margin: 3mm 0; font-size: 9.5pt; }
+  th, td { border: 1px solid #c9cedd; padding: 1.6mm 2.5mm; vertical-align: top; text-align: left; }
+  th { background: #e8ecf7; }
+  .toc { background: #f7f8fc; border: 1px solid #dfe3f0; border-radius: 5px; padding: 5mm 7mm; }
+  .toc h2 { border: none; margin: 0 0 3mm; }
+  .toc ol { margin: 0; padding-left: 6mm; }
+  .toc li { margin: 1.2mm 0; text-align: left; }
+  .toc a { color: #2a3f9d; text-decoration: none; }
+  .note {
+    background: #fff8e6; border-left: 3px solid #e0a800;
+    padding: 2.5mm 4mm; margin: 3mm 0;
+  }
+  .pagebreak { page-break-before: always; }
+  ol.steps > li { margin: 2mm 0; }
+</style>
+</head>
+<body>
+
+<h1>Figo Prefab Importer</h1>
+<p class="subtitle">User Manual &amp; Setup Guide — Version 1.0.0 (Unity 2022.3+, Windows &amp; macOS Editors)</p>
+
+<div class="toc">
+<h2>Table of Contents</h2>
+<ol>
+  <li><a href="#s1">Overview</a></li>
+  <li><a href="#s2">Requirements</a></li>
+  <li><a href="#s3">Installation &amp; Setup</a></li>
+  <li><a href="#s4">The Demo Scene</a></li>
+  <li><a href="#s5">Step-by-Step Tutorial: Converting Your First Design</a></li>
+  <li><a href="#s6">Conversion Options Reference</a></li>
+  <li><a href="#s7">What the Importer Generates</a></li>
+  <li><a href="#s8">The Converter Binary (Download &amp; Offline Installation)</a></li>
+  <li><a href="#s9">Color Space: Gamma vs. Linear</a></li>
+  <li><a href="#s10">Render Pipeline Compatibility (Built-in, URP, HDRP)</a></li>
+  <li><a href="#s11">Scripting Reference</a></li>
+  <li><a href="#s12">Troubleshooting &amp; FAQ</a></li>
+  <li><a href="#s13">Support</a></li>
+</ol>
+</div>
+
+<h2 id="s1">1. Overview</h2>
+<p>Figo Prefab Importer converts a <b>Figma design</b> (a <code>.fig</code> file saved with
+<i>File &rarr; Save local copy&hellip;</i>) or a <b>figo <code>canvas.json</code></b> file into
+ready-to-use <b>UGUI prefabs</b> — <code>.prefab</code> files with baked textures, fonts and
+responsive anchors — entirely inside the Unity Editor. No account, no API key and no plugin
+inside Figma are required, and your design never leaves your machine.</p>
+<p>Typical uses: bringing complete menu screens, HUDs and popups from Figma into Unity in one
+step, and keeping them in sync by simply re-converting after the design changes (all generated
+GUIDs are stable, so re-conversion produces clean version-control diffs).</p>
+
+<h2 id="s2">2. Requirements</h2>
+<ul>
+  <li>Unity <b>2022.3 or newer</b>, Windows or macOS Editor.</li>
+  <li>The <code>com.unity.ugui</code> package (present in any project that uses Unity UI).</li>
+  <li>An internet connection <i>once</i>, for the first conversion, to download the small
+      command-line converter (about 3&nbsp;MB on Windows, about 10&nbsp;MB on macOS).
+      Fully offline installation is also possible — see section 8.</li>
+</ul>
+
+<h2 id="s3">3. Installation &amp; Setup</h2>
+<ol class="steps">
+  <li>Import the package from the Asset Store (<i>Window &rarr; Package Manager &rarr; My Assets</i>)
+      or via <i>Assets &rarr; Import Package</i>. All files are installed under
+      <code>Assets/FigoPrefabImporter/</code>.</li>
+  <li>No further setup is required. The importer is an Editor extension; it adds:
+    <ul>
+      <li>the menu entry <b>Tools &rarr; Figo Prefab Importer&hellip;</b>, and</li>
+      <li>a context-menu entry <b>Figo &rarr; Convert to UGUI Prefabs</b> on
+          <code>.fig</code> / <code>.json</code> assets in the Project window.</li>
+    </ul></li>
+  <li>Optional: open the demo scene (section 4) to see a converted result immediately.</li>
+</ol>
+
+<h2 id="s4">4. The Demo Scene</h2>
+<p>Open <code>Assets/FigoPrefabImporter/Samples/FigoDemo.unity</code>. The scene contains a
+Canvas (Screen Space &ndash; Overlay, reference resolution 1280&times;720) with two prefab
+instances that were generated by this importer from the bundled sample design
+<code>Samples/starfall_menu.canvas.json</code>:</p>
+<ul>
+  <li><b>menu</b> — the main-menu screen of the &ldquo;Starfall&rdquo; sample game UI (active by default);</li>
+  <li><b>settings</b> — the settings screen (inactive by default; disable <i>menu</i> and enable
+      this instance in the Hierarchy to view it).</li>
+</ul>
+<p>The prefabs themselves live in <code>Samples/StarfallPrefabs/</code> together with their baked
+textures. Running the tutorial in section 5 on the bundled sample reproduces exactly these
+prefabs, so you can compare your own conversion result against the shipped one.</p>
+
+<h2 id="s5">5. Step-by-Step Tutorial: Converting Your First Design</h2>
+<ol class="steps">
+  <li>Open <b>Tools &rarr; Figo Prefab Importer&hellip;</b> The importer window appears.</li>
+  <li>In <b>Design input</b>, click <b>Browse</b> and select a design file:
+    <ul>
+      <li>a <code>.fig</code> file saved from Figma via <i>File &rarr; Save local copy&hellip;</i>, or</li>
+      <li>a figo <code>canvas.json</code> (or Figma REST API JSON).</li>
+      <li>To follow along without your own file, pick the bundled sample:
+          <code>Assets/FigoPrefabImporter/Samples/starfall_menu.canvas.json</code>.</li>
+    </ul></li>
+  <li>In <b>Output</b>, enter a folder under <code>Assets/</code>, for example
+      <code>Assets/FigoImported/MyMenu</code>. The folder is created if it does not exist.</li>
+  <li>Leave the <b>Options</b> at their defaults for now (they are explained in section 6).</li>
+  <li>Click <b>Convert</b>.
+    <ul>
+      <li>On the very first conversion the importer asks for permission to download the
+          command-line converter for your platform (section 8). Confirm with <b>Download</b>;
+          this happens only once per project.</li>
+    </ul></li>
+  <li>When the progress bar finishes, the output folder is highlighted in the Project window.
+      It contains one <code>.prefab</code> per top-level design frame plus a shared
+      <code>textures/</code> folder.</li>
+  <li>Create a Canvas if your scene does not have one
+      (<i>GameObject &rarr; UI &rarr; Canvas</i>), then drag any generated prefab onto the
+      Canvas. The prefab keeps the design&rsquo;s pixel size and its responsive anchors. Done.</li>
+</ol>
+<div class="note"><b>Tip:</b> you can also right-click a <code>.fig</code> or <code>.json</code>
+asset in the Project window and choose <b>Figo &rarr; Convert to UGUI Prefabs</b> — this opens
+the importer window with the input and a matching output folder already filled in.</div>
+
+<h2 id="s6">6. Conversion Options Reference</h2>
+<table>
+  <tr><th>Option</th><th>Meaning</th></tr>
+  <tr><td>Fonts folder<br>(optional)</td>
+      <td>A folder containing the design&rsquo;s <code>.ttf</code>/<code>.otf</code> files. They are
+      bundled as font assets and matched to each text element by family, weight and italic style.
+      Without it, all text uses Unity&rsquo;s built-in font.</td></tr>
+  <tr><td>Frame filter<br>(optional)</td>
+      <td>Convert only the top-level frame with this exact name. When empty, every top-level
+      frame becomes one prefab.</td></tr>
+  <tr><td>Texture scale</td>
+      <td>Supersampling factor for baked sprites. <code>1</code> = design pixels,
+      <code>2</code> = @2&times; textures for high-DPI targets.</td></tr>
+  <tr><td>Extract shared components</td>
+      <td>Detects repeated UI structures (cards, list rows, buttons) and emits them as nested
+      prefabs in a <code>components/</code> subfolder, with per-instance overrides
+      (requires Unity 2022.2 or newer).</td></tr>
+  <tr><td>Color space</td>
+      <td><b>Auto Detect</b> reads the project&rsquo;s Player Settings; <b>Gamma</b> /
+      <b>Linear</b> force one mode. See section 9 for details.</td></tr>
+</table>
+
+<h2 id="s7">7. What the Importer Generates</h2>
+<ul>
+  <li>Each top-level design frame becomes one self-contained <code>.prefab</code> built from
+      standard UGUI components only: <code>RectTransform</code>, <code>CanvasRenderer</code>,
+      <code>UI.Image</code> and <code>UI.Text</code>. No custom runtime scripts are added,
+      so the prefabs have no dependency on this package at run time.</li>
+  <li>A shared <code>textures/</code> folder with deduplicated PNG sprites. Solid rectangles
+      become sprite-less tinted <code>UI.Image</code> components (zero texture cost);
+      gradients, vector shapes, images, strokes and effects are baked pixel-faithfully.</li>
+  <li>Responsive constraints from the design are mapped to RectTransform anchors.</li>
+  <li>All GUIDs and file IDs are derived from content: re-converting the same design produces
+      identical files and therefore clean version-control diffs.</li>
+</ul>
+
+<h2 id="s8">8. The Converter Binary (Download &amp; Offline Installation)</h2>
+<p>Conversion is performed by <code>figo2unity</code>, a self-contained command-line program with
+no external dependencies. Your design file is processed locally; the network is used only to
+fetch the converter itself, once.</p>
+<h3>8.1 Automatic download (default)</h3>
+<p>On the first <b>Convert</b> the plugin offers to download the binary for your platform from
+the open-source figo repository and caches it in <code>Library/FigoPrefabImporter/</code>
+inside your project:</p>
+<ul>
+  <li>Windows x64 (about 3 MB):<br>
+      <code>https://raw.githubusercontent.com/nowasm/figo/master/prebuild/win-x64/figo2unity.exe</code></li>
+  <li>macOS universal (Intel + Apple Silicon, macOS 11+, about 10 MB):<br>
+      <code>https://raw.githubusercontent.com/nowasm/figo/master/prebuild/macos/figo2unity</code></li>
+</ul>
+<p>If the <code>Library/</code> folder is ever deleted, the binary is simply downloaded again.
+To force a fresh copy, delete <code>Library/FigoPrefabImporter/</code> and convert again.</p>
+<h3>8.2 Offline / air-gapped machines</h3>
+<p>Download the file listed above on any machine and place it in the package&rsquo;s
+<code>Editor/Bin/</code> folder (create the folder next to
+<code>Editor/FigoPrefabImporter.cs</code>). A binary found there always takes precedence over
+the downloaded cache, and no network access is attempted.</p>
+
+<h2 id="s9">9. Color Space: Gamma vs. Linear</h2>
+<p><b>Gamma</b> output matches the design pixel for pixel. In a project that uses the
+<b>Linear</b> color space, UGUI blends translucent pixels in linear light, which makes glows,
+soft shadows and translucent panels render noticeably brighter than in the design tool.
+The importer&rsquo;s <b>Linear</b> mode pre-compensates the alpha of translucent pixels so the
+converted UI closely approximates the intended sRGB appearance.</p>
+<p>The default <b>Auto Detect</b> mode reads your project&rsquo;s
+<i>Player Settings &rarr; Other Settings &rarr; Color Space</i> and picks the correct mode
+automatically; the window always shows which mode will be used. If you later switch the
+project&rsquo;s color space, simply re-convert the design.</p>
+
+<h2 id="s10">10. Render Pipeline Compatibility (Built-in, URP, HDRP)</h2>
+<p>The importer is an Editor-only tool and the prefabs it generates are plain UGUI content —
+standard <code>Canvas</code> / <code>UI.Image</code> / <code>UI.Text</code> components rendered
+by Unity&rsquo;s UI system, which works identically under the <b>Built-in Render Pipeline</b>,
+the <b>Universal Render Pipeline (URP)</b> and the <b>High-Definition Render Pipeline
+(HDRP)</b>. Nothing in the package depends on Built-in-Render-Pipeline-only features
+(no lighting, no surface shaders, no post-processing hooks).</p>
+<p>The package contains <b>no shaders and no materials</b> — the bundled sample prefabs and the
+demo scene use only Unity&rsquo;s default UI material. When you convert a design in a
+<b>Linear</b>-color-space project, the converter additionally generates a small unlit UI text
+shader (<code>Figo/UIText</code>, modeled on Unity&rsquo;s own <i>UI/Default</i>) into your output
+folder to keep text edges correct; like <i>UI/Default</i> it is render-pipeline independent and
+needs no conversion by the Render Pipeline Converter. Compatibility has been verified end to end
+on Unity 2022.3 with URP 14: the demo scene renders correctly through a URP camera.</p>
+<p>No setup differences exist between pipelines — the tutorial in section 5 applies unchanged
+to Built-in, URP and HDRP projects.</p>
+
+<h2 id="s11">11. Scripting Reference</h2>
+<p><b>No coding is required to use this asset.</b> All functionality is available through the
+Editor window (<i>Tools &rarr; Figo Prefab Importer&hellip;</i>) and the Project-window context
+menu, and the generated prefabs consist of standard UGUI components only.</p>
+<p>For completeness, the package contains a single Editor script,
+<code>Figo.PrefabImporter.FigoPrefabImporterWindow</code> (assembly
+<code>Figo.PrefabImporter.Editor</code>, namespace <code>Figo.PrefabImporter</code>), an
+<code>EditorWindow</code> that stages the input file, invokes the converter binary and refreshes
+the Asset Database. It is Editor-only and is never included in builds. There is no public
+runtime API.</p>
+
+<h2 id="s12">12. Troubleshooting &amp; FAQ</h2>
+<table>
+  <tr><th>Symptom / question</th><th>Answer</th></tr>
+  <tr><td>&ldquo;Conversion failed — see the Console for details.&rdquo;</td>
+      <td>The Console contains the converter&rsquo;s full log. The most common causes are an
+      unsupported input file (the file must be a Figma <code>.fig</code>, a figo
+      <code>canvas.json</code> or Figma REST JSON) and an output folder outside
+      <code>Assets/</code>.</td></tr>
+  <tr><td>The download dialog fails or the machine has no internet access.</td>
+      <td>Fetch the binary manually and use the offline installation described in
+      section 8.2.</td></tr>
+  <tr><td>Text looks different from the design.</td>
+      <td>Provide the design&rsquo;s font files via the <b>Fonts folder</b> option; without it,
+      all text falls back to Unity&rsquo;s built-in font.</td></tr>
+  <tr><td>Glows or translucent panels look too bright.</td>
+      <td>Your project uses the Linear color space and the prefabs were exported in Gamma mode.
+      Re-convert with <b>Color space</b> set to <b>Linear</b> (or <b>Auto Detect</b>). See
+      section 9.</td></tr>
+  <tr><td>Does it work in URP or HDRP projects? Do I need the Render Pipeline Converter?</td>
+      <td>Yes, it works unchanged in Built-in, URP and HDRP projects, and no conversion step is
+      needed — the output is plain UGUI rendered with Unity&rsquo;s default UI material. See
+      section 10.</td></tr>
+  <tr><td>Does the asset add anything to my builds?</td>
+      <td>No. The package is Editor-only; the generated prefabs use only standard UGUI
+      components and have no dependency on the package.</td></tr>
+  <tr><td>Is my design uploaded anywhere?</td>
+      <td>No. Conversion runs entirely on your machine. The only network access is the one-time
+      download of the converter binary, and even that can be avoided (section 8.2).</td></tr>
+</table>
+
+<h2 id="s13">13. Support</h2>
+<p>Questions, bug reports and feature requests:
+<code>https://github.com/nowasm/figo/issues</code></p>
+<p>&copy; 2026 figo. All trademarks are the property of their respective owners.</p>
+
+</body>
+</html>
