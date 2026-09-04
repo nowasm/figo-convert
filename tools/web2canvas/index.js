@@ -357,8 +357,9 @@ function collectorFn({ rootSelector, aiName }) {
     return null;
   }
   function semanticName(el) {
+    const explicit = el.getAttribute && el.getAttribute('data-name');
     const cn = (typeof el.className === 'string' && el.className.trim()) ? el.className.trim().split(/\s+/)[0] : null;
-    return reactName(el) || cn || null;
+    return explicit || reactName(el) || cn || null;
   }
 
   // Context hints for naming a TEXT node by ROLE (not its literal text):
@@ -651,12 +652,17 @@ function collectorFn({ rootSelector, aiName }) {
     // carry the component name; inner elements use their own class (else tag_N),
     // so the tree reads as <Component> wrapping anonymous structure, not the
     // ancestor component name repeated down every child.
-    const comp = reactName(el);
-    const compRoot = !!(comp && comp !== (el.parentElement ? reactName(el.parentElement) : null));
+    const explicitComp = el.getAttribute && el.getAttribute('data-comp');
+    const parentExplicitComp = el.parentElement && el.parentElement.getAttribute
+      ? el.parentElement.getAttribute('data-comp') : null;
+    const comp = explicitComp || reactName(el);
+    const parentComp = explicitComp ? parentExplicitComp
+      : (el.parentElement ? reactName(el.parentElement) : null);
+    const compRoot = !!(comp && comp !== parentComp);
     const ownClass = (typeof el.className === 'string' && el.className.trim()) ? el.className.trim().split(/\s+/)[0] : null;
     const out = {
       tag,
-      cname: compRoot ? comp : (ownClass || null),
+      cname: semanticName(el) || (compRoot ? comp : (ownClass || null)),
       comp, compRoot,            // source-component type + instance-root flag (prefab grouping spine)
       rect: { x: r.left - ox, y: r.top - oy, w: r.width, h: r.height },
       text: ti ? ti.text : null,
@@ -795,6 +801,20 @@ function setBgOnlyFn({ id, on, hideKids }) {
     for (const e of all) e.style.visibility = 'hidden';
     const el = document.querySelector(`[data-w2c="${id}"]`);
     if (!el) return;
+    // Chromium does not reliably paint a visible descendant into an element
+    // screenshot while one of its ancestors is explicitly visibility:hidden.
+    // The old isolation strategy therefore produced fully transparent PNGs
+    // for almost every nested raster in plain-HTML artboards. Keep the target
+    // ancestry visible, but neutralise each ancestor's own paint so translucent
+    // targets retain alpha instead of being composited over the page chrome.
+    for (let p = el.parentElement; p && p !== document.body; p = p.parentElement) {
+      if (p.__w2cAncestorCss == null) p.__w2cAncestorCss = p.style.cssText;
+      p.style.setProperty('visibility', 'visible', 'important');
+      p.style.setProperty('background', 'transparent', 'important');
+      p.style.setProperty('border-color', 'transparent', 'important');
+      p.style.setProperty('box-shadow', 'none', 'important');
+      p.style.setProperty('filter', 'none', 'important');
+    }
     el.style.visibility = 'visible';
     if (hideKids) {
       el.setAttribute('data-w2c-c', el.style.color || '~'); el.style.color = 'transparent';
@@ -807,6 +827,12 @@ function setBgOnlyFn({ id, on, hideKids }) {
   } else {
     document.documentElement.style.background = '';
     document.body.style.background = '';
+    for (const e of all) {
+      if (e.__w2cAncestorCss != null) {
+        e.style.cssText = e.__w2cAncestorCss;
+        delete e.__w2cAncestorCss;
+      }
+    }
     for (const e of all) e.style.visibility = '';
     const el = document.querySelector(`[data-w2c="${id}"]`);
     if (el) {
@@ -825,12 +851,26 @@ function setGroupOnlyFn({ gid, on }) {
     document.body.style.background = 'transparent';
     for (const e of all) e.style.visibility = 'hidden';
     document.querySelectorAll(`[data-w2c-grp="${gid}"]`).forEach(el => {
+      for (let p = el.parentElement; p && p !== document.body; p = p.parentElement) {
+        if (p.__w2cAncestorCss == null) p.__w2cAncestorCss = p.style.cssText;
+        p.style.setProperty('visibility', 'visible', 'important');
+        p.style.setProperty('background', 'transparent', 'important');
+        p.style.setProperty('border-color', 'transparent', 'important');
+        p.style.setProperty('box-shadow', 'none', 'important');
+        p.style.setProperty('filter', 'none', 'important');
+      }
       el.style.visibility = 'visible';
       el.querySelectorAll('*').forEach(d => { d.style.visibility = 'visible'; });
     });
   } else {
     document.documentElement.style.background = '';
     document.body.style.background = '';
+    for (const e of all) {
+      if (e.__w2cAncestorCss != null) {
+        e.style.cssText = e.__w2cAncestorCss;
+        delete e.__w2cAncestorCss;
+      }
+    }
     for (const e of all) e.style.visibility = '';
   }
 }
@@ -1862,12 +1902,15 @@ function openInFigoedit(file) {
         if (m.anim) await page.evaluate(setClipReleaseFn, { id: m.id, on: true });
         if (m.group) {  // one clip screenshot of the whole decoration cluster
           await page.evaluate(setGroupOnlyFn, { gid: m.id, on: true });
+          await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
           await page.screenshot({ path: outPath, clip: m.clip, omitBackground: true });
         } else if (m.clip) {  // raster with an outer glow — capture the expanded box
           await page.evaluate(setBgOnlyFn, { id: m.id, on: true, hideKids: !m.whole });
+          await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
           await page.screenshot({ path: outPath, clip: m.clip, omitBackground: true });
         } else {
           await page.evaluate(setBgOnlyFn, { id: m.id, on: true, hideKids: !m.whole });
+          await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
           // animations: 'disabled' — an infinitely transform-animated element
           // never passes the stability wait (30s timeout PER raster; a matching
           // screen full of them stalled a capture for 12+ minutes). Freezing at

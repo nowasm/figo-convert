@@ -8,7 +8,7 @@
     "web2canvas": "index.js"
   },
   "scripts": {
-    "test": "node index.js test/sample.html -o test/out.canvas.json"
+    "test": "node index.js test/sample.html -o test/out.canvas.json && node test/assert-explicit-semantics.js"
   },
   "dependencies": {
     "@babel/standalone": "^7.29.0",
